@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { deleteRecurringTransaction } from "@/actions/financial-actions";
 import { toast } from "sonner";
-import { RecurrenceFrequency, TransactionType } from "@prisma/client";
+import { RecurrenceFrequency, TransactionType } from "@prisma-client";
 
 interface RecurringCardProps {
   recurring: {

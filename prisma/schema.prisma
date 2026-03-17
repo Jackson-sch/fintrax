@@ -1,0 +1,273 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ========================
+// Better Auth Tables
+// ========================
+model User {
+  id            String   @id
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  currency      String   @default("USD")
+
+  sessions     Session[]
+  accounts     Account[]
+  transactions Transaction[]
+  loans        Loan[]
+  alerts       Alert[]
+  categories   Category[]
+  budgets              Budget[]
+  recurringTransactions RecurringTransaction[]
+  savingGoals          SavingGoal[]
+  wallets              Wallet[]
+  tags                 Tag[]
+  notifications        Notification[]
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+}
+
+// ========================
+// App Models
+// ========================
+model Category {
+  id    String @id @default(cuid())
+  name  String
+  icon  String @default("circle")
+  color String @default("#64748b")
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  transactions Transaction[]
+  budgets               Budget[]
+  recurringTransactions RecurringTransaction[]
+
+  @@unique([name, userId])
+}
+
+model Transaction {
+  id          String            @id @default(cuid())
+  description String
+  amount      Float
+  type        TransactionType
+  status      TransactionStatus @default(COMPLETED)
+  date        DateTime          @default(now())
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  walletId String?
+  wallet   Wallet? @relation(fields: [walletId], references: [id])
+  tags     Tag[]
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum TransactionStatus {
+  COMPLETED
+  PENDING
+  OVERDUE
+}
+
+model Loan {
+  id           String     @id @default(cuid())
+  entityName   String
+  type         LoanType
+  amount       Float
+  paidAmount   Float      @default(0)
+  interestRate Float      @default(0)
+  status       LoanStatus @default(ACTIVE)
+  dueDate      DateTime?
+  notes        String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum LoanType {
+  LOAN
+  COLLECTION
+}
+
+enum LoanStatus {
+  ACTIVE
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+model Alert {
+  id        String    @id @default(cuid())
+  type      AlertType
+  threshold Float
+  enabled   Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum AlertType {
+  SPENDING_LIMIT
+  INCOME_ALERT
+  LOAN_DUE_DATE
+  LOW_BALANCE
+  BUDGET_EXCEEDED
+}
+
+model Budget {
+  id         String   @id @default(cuid())
+  amount     Float
+  month      Int
+  year       Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, month, year, userId])
+}
+
+model RecurringTransaction {
+  id          String           @id @default(cuid())
+  description String
+  amount      Float
+  type        TransactionType
+  frequency   RecurrenceFrequency
+  startDate   DateTime         @default(now())
+  endDate     DateTime?
+  lastProcessed DateTime?      @default(now())
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum RecurrenceFrequency {
+  DAILY
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+  YEARLY
+}
+
+model SavingGoal {
+  id            String    @id @default(cuid())
+  name          String
+  targetAmount  Float
+  currentAmount Float     @default(0)
+  deadline      DateTime?
+  color         String    @default("#3b82f6")
+  icon          String    @default("target")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Wallet {
+  id        String   @id @default(cuid())
+  name      String
+  balance   Float    @default(0)
+  currency  String   @default("USD")
+  color     String   @default("#3b82f6")
+  icon      String   @default("wallet")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  transactions Transaction[]
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String
+  color     String   @default("#64748b")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  transactions Transaction[]
+
+  @@unique([name, userId])
+}
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  type      String   @default("INFO") // INFO, SUCCESS, WARNING, ERROR, BUDGET, etc
+  link      String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}

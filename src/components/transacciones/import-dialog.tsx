@@ -119,7 +119,7 @@ export function ImportDialog() {
         {/* Glow */}
         <div className="pointer-events-none absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-28 bg-amber-500/8 rounded-full blur-2xl" />
 
-        <div className="relative p-7 space-y-5">
+        <div className="relative p-5 md:p-7 space-y-5">
           {/* ── Header ── */}
           <DialogHeader className="space-y-1">
             <div className="flex items-center gap-3">

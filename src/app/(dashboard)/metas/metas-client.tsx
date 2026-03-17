@@ -21,9 +21,10 @@ interface GoalItem {
 interface MetasClientProps {
   initialGoals: GoalItem[];
   currency: string;
+  wallets?: { id: string; name: string; color: string; balance: number }[];
 }
 
-export function MetasClient({ initialGoals, currency }: MetasClientProps) {
+export function MetasClient({ initialGoals, currency, wallets = [] }: MetasClientProps) {
   const [editId, setEditId] = useState<string | null>(null);
   const [addFundsId, setAddFundsId] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -203,6 +204,8 @@ export function MetasClient({ initialGoals, currency }: MetasClientProps) {
       <AddFundsDialog
         goalId={addFundsId}
         goalName={addFundsGoal?.name || null}
+        currency={currency}
+        wallets={wallets}
         open={!!addFundsId}
         onOpenChange={(open) => {
           if (!open) setAddFundsId(null);

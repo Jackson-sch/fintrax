@@ -89,43 +89,93 @@ export async function updateTransaction(
   const session = await getSession();
   if (!session) throw new Error("No session found");
 
+  const userId = session.user.id;
   const { tagIds, ...rest } = data;
 
-  // For simplicity in this phase, we're not recalculating balances on update 
-  // unless we specifically want to handle complex logic. 
-  // We'll focus on getting the relations working.
+  const result = await prisma.$transaction(async (tx) => {
+    // 1. Get existing transaction to know old amount and wallet
+    const oldTransaction = await tx.transaction.findUnique({
+      where: { id, userId },
+    });
 
-  const transaction = await prisma.transaction.update({
-    where: {
-      id,
-      userId: session.user.id,
-    },
-    data: {
-      ...rest,
-      tags: tagIds ? {
-        set: tagIds.map(tid => ({ id: tid }))
-      } : undefined
-    },
+    if (!oldTransaction) throw new Error("Transaction not found");
+
+    // 2. Revert old balance impact if it had a wallet
+    if (oldTransaction.walletId) {
+      await tx.wallet.update({
+        where: { id: oldTransaction.walletId, userId },
+        data: {
+          balance: oldTransaction.type === "INCOME" 
+            ? { decrement: oldTransaction.amount } 
+            : { increment: oldTransaction.amount }
+        }
+      });
+    }
+
+    // 3. Update transaction
+    const updatedTransaction = await tx.transaction.update({
+      where: { id, userId },
+      data: {
+        ...rest,
+        tags: tagIds ? {
+          set: tagIds.map(tid => ({ id: tid }))
+        } : undefined
+      },
+    });
+
+    // 4. Apply new balance impact if it has a wallet
+    if (updatedTransaction.walletId) {
+      await tx.wallet.update({
+        where: { id: updatedTransaction.walletId, userId },
+        data: {
+          balance: updatedTransaction.type === "INCOME" 
+            ? { increment: updatedTransaction.amount } 
+            : { decrement: updatedTransaction.amount }
+        }
+      });
+    }
+
+    return updatedTransaction;
   });
 
   revalidatePath("/dashboard");
   revalidatePath("/transacciones");
   revalidatePath("/cuentas");
-  return transaction;
+  return result;
 }
 
 export async function deleteTransaction(id: string) {
   const session = await getSession();
   if (!session) throw new Error("No session found");
 
-  const transaction = await prisma.transaction.delete({
-    where: {
-      id,
-      userId: session.user.id,
-    },
+  const userId = session.user.id;
+
+  const result = await prisma.$transaction(async (tx) => {
+    const transaction = await tx.transaction.findUnique({
+      where: { id, userId },
+    });
+
+    if (!transaction) throw new Error("Transaction not found");
+
+    // Revert balance impact
+    if (transaction.walletId) {
+      await tx.wallet.update({
+        where: { id: transaction.walletId, userId },
+        data: {
+          balance: transaction.type === "INCOME" 
+            ? { decrement: transaction.amount } 
+            : { increment: transaction.amount }
+        }
+      });
+    }
+
+    return await tx.transaction.delete({
+      where: { id, userId },
+    });
   });
 
   revalidatePath("/dashboard");
   revalidatePath("/transacciones");
-  return transaction;
+  revalidatePath("/cuentas");
+  return result;
 }

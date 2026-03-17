@@ -74,7 +74,7 @@ export default async function TransaccionesPage({
         subtitle="Gestiona tus movimientos financieros"
       />
 
-      <div className="p-6 md:p-8 space-y-5 max-w-7xl mx-auto">
+      <div className="p-4 md:p-8 space-y-5 max-w-7xl mx-auto">
         {/* ── Summary cards ── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* Monthly income */}
@@ -147,7 +147,7 @@ export default async function TransaccionesPage({
           <SearchBar />
 
           {/* Actions */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 md:shrink-0">
             <ImportDialog />
             <ExportButtons transactions={transactions} currency={currency} />
             <TransactionDialog
@@ -182,7 +182,7 @@ export default async function TransaccionesPage({
                   ].map(({ label, align }, i) => (
                     <th
                       key={i}
-                      className={`${align} text-[10px] font-bold text-white/20 uppercase tracking-widest px-5 py-4`}
+                      className={`${align} text-[10px] font-bold text-white/20 uppercase tracking-widest px-3 md:px-5 py-4`}
                     >
                       {label}
                     </th>

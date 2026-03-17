@@ -88,7 +88,7 @@ export function TransactionRow({
     <>
       <tr className="group border-b border-white/4 hover:bg-white/2.5 transition-colors duration-150">
         {/* Type indicator + Description */}
-        <td className="px-5 py-3.5">
+        <td className="px-3 md:px-5 py-3.5">
           <div className="flex items-center gap-3">
             {/* Type icon pill */}
             <div
@@ -143,7 +143,7 @@ export function TransactionRow({
         </td>
 
         {/* Status */}
-        <td className="px-5 py-3.5 text-center">
+        <td className="px-3 md:px-5 py-3.5 text-center">
           <Badge
             variant="outline"
             className={cn(
@@ -159,7 +159,7 @@ export function TransactionRow({
         </td>
 
         {/* Actions */}
-        <td className="px-5 py-3.5 text-center">
+        <td className="px-3 md:px-5 py-3.5 text-center">
           <div className="flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150">
             <DropdownMenu>
               <DropdownMenuTrigger className="p-1.5 rounded-xl text-white/20 hover:text-white hover:bg-white/10 transition-all outline-none">

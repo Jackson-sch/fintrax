@@ -133,12 +133,12 @@ export function BudgetDialog({
           {/* Radial glow */}
           <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-72 h-72 rounded-full blur-3xl opacity-10 pointer-events-none bg-violet-400" />
 
-          <div className="relative z-10 px-8 pt-8 pb-7 space-y-6">
+          <div className="relative z-10 px-5 pt-6 pb-6 md:px-8 md:pt-8 md:pb-7 space-y-6">
             {/* Header */}
             <DialogHeader>
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
-                  <DialogTitle className="text-[1.6rem] font-bold tracking-tight text-white">
+                  <DialogTitle className="text-xl md:text-[1.6rem] font-bold tracking-tight text-white">
                     {initialData ? "Editar presupuesto" : "Nuevo presupuesto"}
                   </DialogTitle>
                   <p className="text-sm text-white/30 font-medium">
@@ -254,7 +254,7 @@ export function BudgetDialog({
                       </FormLabel>
                       <FormControl>
                         <div className="relative group">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-white/25 bg-white/5 border border-white/8 px-2 py-0.5 rounded-md pointer-events-none">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-white/25 bg-white/6 border border-white/8 px-2 py-1 rounded-lg pointer-events-none">
                             {currency}
                           </span>
                           <Input
@@ -263,11 +263,11 @@ export function BudgetDialog({
                             placeholder="0.00"
                             {...field}
                             className={cn(
-                              "bg-white/4 border border-white/8 text-white h-[60px] rounded-2xl transition-all",
-                              "hover:bg-white/5 hover:border-white/10",
-                              "focus:bg-white/6 focus:border-white/15",
+                              "bg-white/6 border border-white/10 text-white h-[60px] rounded-2xl transition-all outline-none",
+                              "hover:bg-white/10 hover:border-white/15",
+                              "focus:bg-white/12 focus:border-white/25",
                               "placeholder:text-white/15",
-                              "pl-14 text-2xl font-bold",
+                              "pl-16 text-2xl font-bold",
                             )}
                           />
                         </div>

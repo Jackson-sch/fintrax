@@ -28,10 +28,10 @@ export function ExportButtons({
     <>
       <button
         onClick={() => exportTransactionsToPDF(transactions, currency)}
-        className="flex items-center gap-2 px-4 py-2.5 glass-panel rounded-xl text-rose-400 hover:bg-rose-500/10 transition-all text-sm font-medium"
+        className="flex items-center gap-2 px-3 md:px-4 py-2.5 glass-panel rounded-xl text-rose-400 hover:bg-rose-500/10 transition-all text-sm font-medium"
       >
         <FileText className="h-4 w-4" />
-        PDF
+        <span className="hidden sm:inline">PDF</span>
       </button>
       <button
         onClick={async () => {
@@ -49,17 +49,17 @@ export function ExportButtons({
             toast.error("Error al exportar CSV");
           }
         }}
-        className="flex items-center gap-2 px-4 py-2.5 glass-panel rounded-xl text-blue-400 hover:bg-blue-500/10 transition-all text-sm font-medium"
+        className="flex items-center gap-2 px-3 md:px-4 py-2.5 glass-panel rounded-xl text-blue-400 hover:bg-blue-500/10 transition-all text-sm font-medium"
       >
         <FileSpreadsheet className="h-4 w-4" />
-        CSV
+        <span className="hidden sm:inline">CSV</span>
       </button>
       <button
         onClick={() => exportTransactionsToExcel(transactions, currency)}
-        className="flex items-center gap-2 px-4 py-2.5 glass-panel rounded-xl text-emerald-400 hover:bg-emerald-500/10 transition-all text-sm font-medium"
+        className="flex items-center gap-2 px-3 md:px-4 py-2.5 glass-panel rounded-xl text-emerald-400 hover:bg-emerald-500/10 transition-all text-sm font-medium"
       >
         <FileSpreadsheet className="h-4 w-4" />
-        Excel
+        <span className="hidden sm:inline">Excel</span>
       </button>
     </>
   );

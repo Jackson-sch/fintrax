@@ -30,17 +30,21 @@ export function DatePicker({ date, onChange, placeholder = "Seleccionar fecha", 
           <Button
             variant={"outline"}
             className={cn(
-              "w-full justify-start text-left font-normal h-14 rounded-2xl bg-white/4 border border-white/8 text-white hover:bg-white/6 hover:border-white/12 transition-all",
+              "w-full justify-start text-left font-medium h-12 rounded-xl bg-white/4 border border-white/8 text-white hover:bg-white/6 hover:border-white/20 transition-all shadow-xs",
               !date && "text-white/20",
               className
             )}
           >
-            <CalendarIcon className="mr-2 h-4 w-4 text-white/40" />
-            {date ? format(date, "PPP", { locale: es }) : <span>{placeholder}</span>}
+            <div className="flex items-center gap-3">
+              <CalendarIcon className="h-4 w-4 text-white/30" />
+              <span className="truncate">
+                {date ? format(date, "d 'de' MMMM, yyyy", { locale: es }) : placeholder}
+              </span>
+            </div>
           </Button>
         }
       />
-      <PopoverContent className="w-auto p-0 bg-[#0c0e14] border-white/10 shadow-2xl" align="start">
+      <PopoverContent className="w-auto p-0 bg-[#0c0e14]/95 backdrop-blur-xl border-white/10 shadow-2xl rounded-2xl overflow-hidden" align="start">
         <Calendar
           mode="single"
           selected={date}

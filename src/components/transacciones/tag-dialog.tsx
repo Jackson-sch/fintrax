@@ -86,9 +86,9 @@ export function TagDialog({ open, onOpenChange, onSuccess }: TagDialogProps) {
           )}
         />
         
-        <div className="px-8 pt-8 pb-8 space-y-6">
+        <div className="px-5 pt-6 pb-6 md:px-8 md:pt-8 md:pb-8 space-y-6">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold tracking-tight">Nueva Etiqueta</DialogTitle>
+            <DialogTitle className="text-xl md:text-2xl font-bold tracking-tight">Nueva Etiqueta</DialogTitle>
             <p className="text-sm text-white/30">Crea una etiqueta para organizar tus movimientos</p>
           </DialogHeader>
 

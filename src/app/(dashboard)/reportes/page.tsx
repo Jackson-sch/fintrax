@@ -10,7 +10,6 @@ export const metadata = {
 
 export default async function ReportesPage() {
   const session = await getSession();
-  console.log("🚀 ~ ReportesPage ~ session:", session);
   if (!session) redirect("/login");
 
   const { monthlyData, budgetData } = await getReportsData();

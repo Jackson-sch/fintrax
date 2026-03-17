@@ -55,6 +55,7 @@ interface RecurringDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   trigger?: React.ReactElement;
+  currency?: string;
 }
 
 const FREQUENCIES = [
@@ -71,6 +72,7 @@ export function RecurringDialog({
   open: controlledOpen,
   onOpenChange,
   trigger,
+  currency = "PEN",
 }: RecurringDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -137,9 +139,9 @@ export function RecurringDialog({
 
   // Shared input style — no colored borders
   const inputCls = cn(
-    "bg-white/4 border border-white/8 text-white h-14! w-full rounded-2xl transition-all",
-    "hover:bg-white/6 hover:border-white/12",
-    "focus:bg-white/7 focus:border-white/20",
+    "bg-white/6 border border-white/10 text-white h-14! w-full rounded-2xl transition-all outline-none",
+    "hover:bg-white/10 hover:border-white/15",
+    "focus:bg-white/12 focus:border-white/25",
     "placeholder:text-white/20",
   );
 
@@ -155,12 +157,12 @@ export function RecurringDialog({
         <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full blur-3xl opacity-10 pointer-events-none bg-violet-400" />
         <div className="absolute -bottom-24 left-1/8 -translate-x-1/2 w-96 h-96 rounded-full blur-3xl opacity-10 pointer-events-none bg-indigo-500" />
 
-        <div className="relative z-10 px-8 pt-8 pb-7 space-y-6">
+        <div className="relative z-10 px-5 pt-6 pb-6 md:px-8 md:pt-8 md:pb-7 space-y-6">
           {/* Header */}
           <DialogHeader>
             <div className="flex items-start justify-between">
               <div className="space-y-1">
-                <DialogTitle className="text-[1.6rem] font-bold tracking-tight text-white">
+                <DialogTitle className="text-xl md:text-[1.6rem] font-bold tracking-tight text-white">
                   {initialData ? "Editar recurrencia" : "Nueva recurrencia"}
                 </DialogTitle>
                 <p className="text-sm text-white/30 font-medium">
@@ -239,7 +241,7 @@ export function RecurringDialog({
               />
 
               {/* ── Amount + Frequency ── */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid md:grid-cols-2 gap-3">
                 <FormField
                   control={form.control}
                   name="amount"
@@ -250,12 +252,15 @@ export function RecurringDialog({
                       </FormLabel>
                       <FormControl>
                         <div className="relative group">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-white/25 bg-white/6 border border-white/8 px-2 py-1 rounded-lg pointer-events-none">
+                            {currency}
+                          </span>
                           <Input
                             type="number"
                             step="0.01"
                             placeholder="0.00"
                             {...field}
-                            className={cn(inputCls, "pl-4 pr-4 text-lg font-bold")}
+                            className={cn(inputCls, "pl-16 pr-4 text-lg font-bold")}
                           />
                         </div>
                       </FormControl>
@@ -301,7 +306,7 @@ export function RecurringDialog({
               </div>
 
               {/* ── Category + Start date ── */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid md:grid-cols-2 gap-3">
                 <FormField
                   control={form.control}
                   name="categoryId"

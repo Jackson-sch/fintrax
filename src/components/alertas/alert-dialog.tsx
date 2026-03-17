@@ -64,11 +64,10 @@ export function AlertDialog({
   }
 
   const inputCls = cn(
-    "bg-white/4 border border-white/8 text-white h-14 rounded-2xl transition-all",
-    "hover:bg-white/6 hover:border-white/12",
-    "focus:bg-white/7 focus:border-white/20",
+    "bg-white/6 border border-white/10 text-white h-14 rounded-2xl transition-all outline-none",
+    "hover:bg-white/10 hover:border-white/15",
+    "focus:bg-white/12 focus:border-white/25",
     "placeholder:text-white/20",
-    "focus-visible:ring-amber-500/40",
   );
 
   const defaultTrigger = (
@@ -89,8 +88,8 @@ export function AlertDialog({
           "shadow-amber-500/20",
         )}
       >
-        {/* Top strip */}
-        <div className="absolute top-0 left-0 w-full h-[2px] bg-linear-to-r from-amber-500 via-orange-400 to-amber-600" />
+        {/* Radial glow */}
+        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full blur-3xl opacity-10 pointer-events-none bg-amber-400" />
 
         <div className="relative z-10 px-8 pt-8 pb-7 space-y-6">
           <DialogHeader>

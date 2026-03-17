@@ -104,7 +104,7 @@ export function WalletDialog({ open, onOpenChange, initialData, currency, onSucc
     }
   };
 
-  const inputCls = "bg-white/4 border border-white/8 text-white h-12 rounded-xl focus:bg-white/6 focus:border-white/20 transition-all placeholder:text-white/10";
+  const inputCls = "bg-white/6 border border-white/10 text-white h-12 rounded-xl focus:bg-white/12 focus:border-white/25 transition-all outline-none placeholder:text-white/10";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -118,9 +118,9 @@ export function WalletDialog({ open, onOpenChange, initialData, currency, onSucc
             )}
           />
         
-        <div className="px-8 pt-8 pb-8 space-y-6">
+        <div className="px-5 pt-6 pb-6 md:px-8 md:pt-8 md:pb-8 space-y-6">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold tracking-tight">
+            <DialogTitle className="text-xl md:text-2xl font-bold tracking-tight">
               {initialData ? "Editar Cuenta" : "Nueva Cuenta"}
             </DialogTitle>
             <p className="text-sm text-white/30">Registra tus medios de pago y ahorros</p>
@@ -149,14 +149,24 @@ export function WalletDialog({ open, onOpenChange, initialData, currency, onSucc
                   <FormItem>
                     <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-white/40">Balance Inicial ({currency})</FormLabel>
                     <FormControl>
-                      <Input type="number" step="0.01" {...field} className={inputCls} />
+                      <div className="relative group">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-white/25 bg-white/6 border border-white/8 px-2 py-1 rounded-lg pointer-events-none">
+                          {currency}
+                        </span>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          {...field}
+                          className={cn(inputCls, "pl-16")}
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="icon"

@@ -184,20 +184,16 @@ export function TransactionDialog({
   const accent = isIncome
     ? {
         glow: "shadow-emerald-500/20",
-        border: "border-emerald-500/30",
         bg: "bg-emerald-500/10",
         text: "text-emerald-400",
-        ring: "focus-visible:ring-emerald-500/40",
         gradient: "from-emerald-500 to-teal-500",
         buttonBg: "bg-emerald-600 hover:bg-emerald-500 shadow-emerald-700/40",
         strip: "from-emerald-500 via-teal-400 to-emerald-600",
       }
     : {
         glow: "shadow-rose-500/20",
-        border: "border-rose-500/30",
         bg: "bg-rose-500/10",
         text: "text-rose-400",
-        ring: "focus-visible:ring-rose-500/40",
         gradient: "from-rose-500 to-pink-500",
         buttonBg: "bg-rose-600 hover:bg-rose-500 shadow-rose-700/40",
         strip: "from-rose-500 via-pink-400 to-rose-600",
@@ -230,12 +226,12 @@ export function TransactionDialog({
             )}
           />
 
-          <div className="relative z-10 px-8 pt-8 pb-7 space-y-7">
+          <div className="relative z-10 px-5 pt-6 pb-6 md:px-8 md:pt-8 md:pb-7 space-y-7">
             {/* Header */}
             <DialogHeader>
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
-                  <DialogTitle className="text-[1.6rem] font-bold tracking-tight text-white">
+                  <DialogTitle className="text-xl md:text-[1.6rem] font-bold tracking-tight text-white">
                     {initialData ? "Editar movimiento" : "Nuevo movimiento"}
                   </DialogTitle>
                   <p className="text-sm text-white/30 font-medium">
@@ -248,7 +244,6 @@ export function TransactionDialog({
                   className={cn(
                     "p-2.5 rounded-2xl border",
                     accent.bg,
-                    accent.border,
                   )}
                 >
                   <Sparkles className={cn("h-5 w-5", accent.text)} />
@@ -301,7 +296,7 @@ export function TransactionDialog({
                 />
 
                 {/* ── Amount ── */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid md:grid-cols-2 gap-3">
                   <FormField
                     control={form.control}
                     name="amount"
@@ -313,7 +308,7 @@ export function TransactionDialog({
                         <FormControl>
                           <div className="relative group">
                             {/* currency pill */}
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-white/25 bg-white/6 border border-white/8 px-2.5 py-1 rounded-lg pointer-events-none">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-white/25 bg-white/6 border border-white/8 px-2 py-1 rounded-lg pointer-events-none">
                               {currency}
                             </span>
                             <Input
@@ -322,11 +317,10 @@ export function TransactionDialog({
                               placeholder="0.00"
                               {...field}
                               className={cn(
-                                "bg-white/4 border border-white/8 text-white h-14 text-3xl font-bold rounded-2xl pl-20 pr-4 transition-all",
+                                "bg-white/4 border border-white/8 text-white h-14 font-bold rounded-2xl pl-16 pr-4 transition-all outline-none",
                                 "hover:bg-white/6 hover:border-white/12",
-                                "focus:bg-white/7 focus:border-white/20",
+                                "focus:bg-white/10 focus:border-white/20",
                                 "placeholder:text-white/15",
-                                accent.ring,
                               )}
                             />
                           </div>
@@ -360,7 +354,6 @@ export function TransactionDialog({
                                 "bg-white/4 border border-white/8 text-white h-14! w-full rounded-2xl px-4 transition-all",
                                 "hover:bg-white/6 hover:border-white/12",
                                 !field.value && "text-white/30",
-                                accent.ring,
                               )}
                             >
                               <SelectValue placeholder="Elegir">
@@ -422,13 +415,6 @@ export function TransactionDialog({
                               "hover:bg-white/6 hover:border-white/12",
                               "focus:bg-white/7 focus:border-white/20",
                               "placeholder:text-white/20",
-                              accent.ring,
-                            )}
-                          />
-                          <div
-                            className={cn(
-                              "absolute bottom-0 left-4 right-4 h-[1px] bg-linear-to-r opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 rounded-full",
-                              accent.gradient,
                             )}
                           />
                         </div>
@@ -463,7 +449,6 @@ export function TransactionDialog({
                               "bg-white/4 border border-white/8 text-white h-14! w-full rounded-2xl px-4 transition-all",
                               "hover:bg-white/6 hover:border-white/12",
                               !field.value && "text-white/30",
-                              accent.ring,
                             )}
                           >
                             <SelectValue placeholder="Efectivo, Banco...">

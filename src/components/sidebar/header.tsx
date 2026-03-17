@@ -36,7 +36,7 @@ export function Header({ title, subtitle }: HeaderProps) {
   const router = useRouter();
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between px-6 md:px-8 py-4 bg-transparent backdrop-blur-none border-none">
+    <header className="sticky top-0 z-30 flex items-center justify-between px-4 md:px-8 py-4 bg-transparent backdrop-blur-none border-none">
       <div className="flex items-center gap-4">
         <SafeSidebarTrigger />
         <div>

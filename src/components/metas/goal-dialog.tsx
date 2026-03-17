@@ -20,10 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { 
-  addSavingGoal, 
-  updateSavingGoal 
-} from "@/actions/financial-actions";
+import { addSavingGoal, updateSavingGoal } from "@/actions/financial-actions";
 import { toast } from "sonner";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -53,6 +50,7 @@ const PRESET_COLORS = [
 
 interface GoalDialogProps {
   initialData?: any;
+  currency?: string;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   trigger?: React.ReactElement;
@@ -60,6 +58,7 @@ interface GoalDialogProps {
 
 export function GoalDialog({
   initialData,
+  currency = "PEN",
   open: controlledOpen,
   onOpenChange,
   trigger,
@@ -74,7 +73,9 @@ export function GoalDialog({
       name: initialData?.name || "",
       targetAmount: initialData?.targetAmount || 0,
       currentAmount: initialData?.currentAmount || 0,
-      deadline: initialData?.deadline ? new Date(initialData.deadline) : undefined,
+      deadline: initialData?.deadline
+        ? new Date(initialData.deadline)
+        : undefined,
       color: initialData?.color || "#3b82f6",
     },
   });
@@ -95,28 +96,31 @@ export function GoalDialog({
     }
   };
 
-  const inputCls = "bg-white/4 border border-white/8 text-white h-12 rounded-xl focus:bg-white/6 focus:border-white/20 transition-all placeholder:text-white/20";
+  const inputCls =
+    "bg-white/6 border border-white/10 text-white h-12 rounded-xl focus:bg-white/10 focus:border-white/20 transition-all placeholder:text-white/20 outline-none";
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {trigger && <DialogTrigger render={trigger} />}
       <DialogContent className="sm:max-w-[450px] bg-[#0c0e14] border-white/10 text-white p-0 overflow-hidden rounded-3xl">
-        <div className="absolute top-0 left-0 w-full h-[2px]" style={{ backgroundColor: form.watch("color") }} />
-        
-        <div className="px-8 pt-8 pb-8 space-y-6">
+        {/* Radial glow */}
+        <div className="pointer-events-none absolute -top-20 left-1/2 -translate-x-1/2 w-72 h-72 bg-sky-400/10 rounded-full blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-20 left-1/4 -translate-x-1/2 w-96 h-96 bg-sky-400/5 rounded-full blur-2xl" />
+
+        <div className="px-5 pt-6 pb-6 md:px-8 md:pt-8 md:pb-8 space-y-6">
           <DialogHeader className="flex flex-row items-center gap-4 space-y-0">
-            <div 
+            <div
               className="p-3 rounded-2xl border transition-colors duration-500"
-              style={{ 
+              style={{
                 backgroundColor: `${form.watch("color")}15`,
                 borderColor: `${form.watch("color")}30`,
-                color: form.watch("color") 
+                color: form.watch("color"),
               }}
             >
               <Target className="h-6 w-6" />
             </div>
             <div className="space-y-1">
-              <DialogTitle className="text-2xl font-bold tracking-tight">
+              <DialogTitle className="text-xl md:text-2xl font-bold tracking-tight">
                 {initialData ? "Editar" : "Nueva"} Meta de Ahorro
               </DialogTitle>
               <p className="text-xs text-white/30 font-medium uppercase tracking-widest">
@@ -132,24 +136,42 @@ export function GoalDialog({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-white/40">Nombre de la Meta</FormLabel>
+                    <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+                      Nombre de la Meta
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="Ej. Viaje a Europa" {...field} className={inputCls} />
+                      <Input
+                        placeholder="Ej. Viaje a Europa"
+                        {...field}
+                        className={inputCls}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="targetAmount"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-white/40">Monto Objetivo</FormLabel>
+                      <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+                        Monto Objetivo
+                      </FormLabel>
                       <FormControl>
-                        <Input type="number" step="0.01" {...field} className={inputCls} />
+                        <div className="relative group">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-white/25 bg-white/6 border border-white/8 px-2 py-1 rounded-lg pointer-events-none">
+                            {currency}
+                          </span>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            {...field}
+                            className={cn(inputCls, "pl-16")}
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -161,9 +183,22 @@ export function GoalDialog({
                   name="currentAmount"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-white/40">Monto Inicial</FormLabel>
+                      <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+                        Monto Inicial
+                      </FormLabel>
                       <FormControl>
-                        <Input type="number" step="0.01" {...field} className={cn(inputCls, initialData && "opacity-50")} disabled={!!initialData} />
+                        <div className="relative group">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-white/25 bg-white/6 border border-white/8 px-2 py-1 rounded-lg pointer-events-none">
+                            {currency}
+                          </span>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            {...field}
+                            className={cn(inputCls, "pl-16", initialData && "opacity-50")}
+                            disabled={!!initialData}
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -176,11 +211,13 @@ export function GoalDialog({
                 name="deadline"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-white/40">Fecha Límite (Opcional)</FormLabel>
+                    <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+                      Fecha Límite (Opcional)
+                    </FormLabel>
                     <FormControl>
-                      <DatePicker 
-                        date={field.value} 
-                        onChange={field.onChange} 
+                      <DatePicker
+                        date={field.value}
+                        onChange={field.onChange}
                         placeholder="dd/mm/aaaa"
                       />
                     </FormControl>
@@ -205,9 +242,9 @@ export function GoalDialog({
                           onClick={() => field.onChange(color)}
                           className={cn(
                             "h-8 w-8 rounded-full border-2 transition-all",
-                            field.value === color 
-                              ? "border-white scale-110 shadow-lg" 
-                              : "border-transparent hover:scale-105"
+                            field.value === color
+                              ? "border-white scale-110 shadow-lg"
+                              : "border-transparent hover:scale-105",
                           )}
                           style={{ backgroundColor: color }}
                         />
@@ -219,12 +256,12 @@ export function GoalDialog({
               />
 
               <div className="pt-4">
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full h-14 rounded-2xl font-bold text-lg shadow-lg transition-all duration-300 group"
-                  style={{ 
+                  style={{
                     backgroundColor: form.watch("color"),
-                    boxShadow: `0 10px 20px ${form.watch("color")}30`
+                    boxShadow: `0 10px 20px ${form.watch("color")}30`,
                   }}
                 >
                   <CheckCircle2 className="mr-2 h-5 w-5" />

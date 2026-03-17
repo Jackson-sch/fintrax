@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export default async function proxy(request: NextRequest) {
-  const sessionCookie = request.cookies.get("better-auth.session_token");
+  const isProd = process.env.NODE_ENV === "production";
+  const cookieName = isProd ? "__Secure-better-auth.session_token" : "better-auth.session_token";
+  const sessionCookie = request.cookies.get(cookieName);
 
   const isAuthPage =
     request.nextUrl.pathname.startsWith("/login") ||

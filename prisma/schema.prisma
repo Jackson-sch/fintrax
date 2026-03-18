@@ -137,6 +137,9 @@ model Loan {
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  walletId String?
+  wallet   Wallet? @relation(fields: [walletId], references: [id])
 }
 
 enum LoanType {
@@ -242,6 +245,7 @@ model Wallet {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   transactions Transaction[]
+  loans        Loan[]
 }
 
 model Tag {

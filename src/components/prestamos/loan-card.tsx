@@ -1,86 +1,82 @@
 "use client";
 
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { LoanDialog } from "@/components/pagos/loan-dialog";
 import { updateLoan, deleteLoan } from "@/actions/financial-actions";
 import { toast } from "sonner";
 import { formatCurrency } from "@/lib/formatters";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MoreVertical, Edit2, Trash2 } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { CheckCircle2 } from "lucide-react";
+import { Edit2, CheckCircle2, Clock, Loader2 } from "lucide-react";
+import { CardActionMenu } from "@/components/comun/card-action-menu";
+import { ConfirmDeleteDialog } from "@/components/comun/confirm-delete-dialog";
+import { cn } from "@/lib/utils";
 
 export interface LoanItem {
   id: string;
   entityName: string;
   amount: number;
   paidAmount: number;
-  type: string;
-  status: string;
+  type: "LOAN" | "COLLECTION";
+  status: "ACTIVE" | "PAID" | "OVERDUE" | "CANCELLED";
   dueDate: Date | null;
   interestRate: number;
   notes: string | null;
+  walletId?: string | null;
+  wallet?: {
+    id: string;
+    name: string;
+    color: string;
+  } | null;
 }
 
-const statusConfig: Record<string, { label: string; className: string }> = {
-  ACTIVE: {
-    label: "Activo",
-    className: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  },
-  PAID: {
-    label: "Pagado",
-    className: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-  },
-  OVERDUE: {
-    label: "Atrasado",
-    className: "bg-rose-500/20 text-rose-400 border-rose-500/30",
-  },
+/* ── Status palette ── */
+const STATUS: Record<string, { label: string; card: string; dot: string; text: string }> = {
+  ACTIVE:  { label: "Activo",   card: "bg-blue-500/10 border-blue-400/20",     dot: "bg-blue-400",    text: "text-blue-400"    },
+  PAID:    { label: "Pagado",   card: "bg-emerald-500/10 border-emerald-400/20", dot: "bg-emerald-400", text: "text-emerald-400" },
+  OVERDUE: { label: "Atrasado", card: "bg-rose-500/10 border-rose-400/20",      dot: "bg-rose-400",    text: "text-rose-400"    },
 };
 
-export function LoanCard({
-  item,
-  currency,
-}: {
-  item: LoanItem;
-  currency: string;
-}) {
+export function LoanCard({ item, currency }: { item: LoanItem; currency: string }) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [editOpen, setEditOpen] = useState(false);
+  const [editOpen,   setEditOpen]   = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const progress = (item.paidAmount / item.amount) * 100;
+  const progress  = Math.min((item.paidAmount / item.amount) * 100, 100);
   const remaining = item.amount - item.paidAmount;
-  const status = statusConfig[item.status] || statusConfig.ACTIVE;
+  const status    = STATUS[item.status] ?? STATUS.ACTIVE;
+  const isCol     = item.type === "COLLECTION";
 
-  async function handleUpdatePaidAmount() {
+  /* accent per status / type */
+  const gradient =
+    item.status === "PAID"    ? "from-emerald-600 to-emerald-400"
+    : item.status === "OVERDUE" ? "from-rose-600 to-rose-400"
+    : isCol                     ? "from-emerald-600 to-teal-400"
+    :                             "from-blue-600 to-indigo-500";
+
+  const glow =
+    item.status === "PAID"    ? "rgba(16,185,129,0.45)"
+    : item.status === "OVERDUE" ? "rgba(244,63,94,0.45)"
+    : isCol                     ? "rgba(16,185,129,0.45)"
+    :                             "rgba(59,130,246,0.45)";
+
+  const hoverBorder = isCol
+    ? "hover:border-emerald-500/20"
+    : "hover:border-blue-500/20";
+
+  const liquidarClass = isCol
+    ? "text-emerald-400 bg-emerald-500/8 border-emerald-400/20 hover:bg-emerald-500/15"
+    : "text-blue-400 bg-blue-500/8 border-blue-400/20 hover:bg-blue-500/15";
+
+  async function handleMarkAsPaid() {
+    if (item.paidAmount === item.amount) {
+      toast.info("Este registro ya está pagado completamente.");
+      return;
+    }
     setIsUpdating(true);
     try {
-      if (item.paidAmount === item.amount) {
-        toast.info("Este registro ya está pagado completamente.");
-        return;
-      }
-      await updateLoan(item.id, {
-        paidAmount: item.amount,
-        status: "PAID",
-      });
+      await updateLoan(item.id, { paidAmount: item.amount, status: "PAID" });
       toast.success("Registro actualizado correctamente");
-    } catch (error) {
+    } catch {
       toast.error("Error al actualizar el registro");
     } finally {
       setIsUpdating(false);
@@ -92,7 +88,7 @@ export function LoanCard({
     try {
       await deleteLoan(item.id);
       toast.success("Registro eliminado correctamente");
-    } catch (error) {
+    } catch {
       toast.error("Error al eliminar");
     } finally {
       setIsDeleting(false);
@@ -100,156 +96,136 @@ export function LoanCard({
     }
   }
 
-  const progressColor =
-    item.status === "PAID"
-      ? "from-emerald-600 to-emerald-400"
-      : item.status === "OVERDUE"
-        ? "from-rose-600 to-rose-400"
-        : "from-blue-600 to-indigo-500";
+  const dueDateStr = item.dueDate
+    ? new Date(item.dueDate).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" })
+    : "Sin vencimiento";
 
   return (
-    <div className="glass-panel p-6 rounded-3xl animate-fade-in relative overflow-hidden group">
-      <div className="flex justify-between items-start mb-6">
-        <div>
-          <h3 className="font-bold text-lg text-white group-hover:text-blue-400 transition-colors">
-            {item.entityName}
-          </h3>
-          <p className="text-xs text-slate-400 mt-1">
-            Vencimiento:{" "}
-            {item.dueDate
-              ? new Date(item.dueDate).toLocaleDateString("es-ES", {
-                  day: "numeric",
-                  month: "short",
-                })
-              : "Sin fecha"}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge
-            variant="outline"
-            className={`${status.className} rounded-full text-xs font-medium px-3 py-1`}
-          >
-            {status.label}
-          </Badge>
+    <div className={cn(
+      "relative overflow-hidden rounded-3xl border border-white/8 bg-white/3 backdrop-blur-xl",
+      "transition-all duration-300 hover:bg-white/5 group animate-fade-in",
+      hoverBorder,
+    )}>
+      {/* Top shimmer */}
+      <div className="absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent via-white/6 to-transparent" />
 
-          {/* Action Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger className="text-slate-500 hover:text-white transition-colors p-1 rounded-md hover:bg-white/10 outline-none">
-              <MoreVertical className="h-4 w-4" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="bg-[#111318] border-white/10 text-slate-300"
-            >
-              <div className="px-2 py-1.5 text-sm font-semibold text-slate-400">
-                Acciones
+      <div className="pl-6 pr-5 pt-5 pb-4 space-y-4">
+
+        {/* ── Header ── */}
+        <div className="flex items-start justify-between">
+          <div className="space-y-1 min-w-0 pr-3">
+            <h3 className="font-bold text-base text-white leading-tight truncate group-hover:text-blue-300 transition-colors duration-200">
+              {item.entityName}
+            </h3>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5">
+                <Clock className="h-3 w-3 text-slate-600 shrink-0" />
+                <span className="text-[10px] text-slate-600 font-medium">{dueDateStr}</span>
               </div>
-              <div className="-mx-1 my-1 h-px bg-white/10" />
-              <DropdownMenuItem
-                onClick={() => setEditOpen(true)}
-                className="hover:bg-white/10! cursor-pointer"
+              {item.wallet && (
+                <div className="flex items-center gap-1.5">
+                  <div 
+                    className="w-1.5 h-1.5 rounded-full" 
+                    style={{ backgroundColor: item.wallet.color }} 
+                  />
+                  <span className="text-[10px] text-slate-600 font-medium truncate max-w-[80px]">
+                    {item.wallet.name}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Status badge */}
+            <div className={cn(
+              "flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-xs font-semibold",
+              status.card, status.text,
+            )}>
+              <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", status.dot)} />
+              {status.label}
+            </div>
+
+            <CardActionMenu
+              onEdit={() => setEditOpen(true)}
+              onDelete={() => setDeleteOpen(true)}
+              editIcon={Edit2}
+            />
+          </div>
+        </div>
+
+        {/* ── Amounts ── */}
+        <div className="flex items-end justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-600 mb-0.5">Total</p>
+            <p className="text-2xl font-bold text-white leading-none">
+              {formatCurrency(item.amount, currency)}
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-600 mb-0.5">Pendiente</p>
+            <p className={cn(
+              "text-xl font-bold leading-none",
+              remaining === 0 ? "text-emerald-400" : "text-slate-400",
+            )}>
+              {formatCurrency(remaining, currency)}
+            </p>
+          </div>
+        </div>
+
+        {/* ── Progress ── */}
+        <div className="space-y-2">
+          <div className="w-full bg-white/6 rounded-full h-1 overflow-hidden">
+            <div
+              className={cn("h-1 rounded-full bg-linear-to-r transition-all duration-700 ease-out", gradient)}
+              style={{ width: `${progress}%`, boxShadow: `0 0 8px ${glow}` }}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="text-xs text-slate-600 font-medium">{progress.toFixed(0)}% pagado</span>
+              {item.interestRate > 0 && (
+                <span className="text-xs text-slate-700">· {item.interestRate}% interés</span>
+              )}
+            </div>
+
+            {item.status !== "PAID" && (
+              <button
+                onClick={handleMarkAsPaid}
+                disabled={isUpdating}
+                className={cn(
+                  "flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-xl border transition-all duration-200 active:scale-95 disabled:opacity-40",
+                  liquidarClass,
+                )}
               >
-                <Edit2 className="h-4 w-4 mr-2" /> Editar
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setDeleteOpen(true)}
-                className="hover:bg-rose-500/20! hover:text-rose-400! cursor-pointer text-rose-400"
-              >
-                <Trash2 className="h-4 w-4 mr-2" /> Eliminar
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                {isUpdating
+                  ? <Loader2 className="h-3 w-3 animate-spin" />
+                  : <CheckCircle2 className="h-3 w-3" />}
+                {isUpdating ? "…" : "Liquidar"}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="flex items-end justify-between mb-3">
-        <div>
-          <p className="text-xs text-slate-500 font-medium mb-1">Total</p>
-          <p className="text-2xl font-bold tracking-tight text-white flex items-baseline gap-1">
-            {formatCurrency(item.amount, currency).split(" ")[0]}
-            <span className="text-sm font-medium text-slate-400">
-              {currency}
-            </span>
-          </p>
-        </div>
-        <div className="text-right">
-          <p className="text-xs text-slate-500 font-medium mb-1">Pendiente</p>
-          <p className="text-lg font-bold text-slate-200">
-            {formatCurrency(remaining, currency)}
-          </p>
-        </div>
-      </div>
-
-      <div className="w-full bg-slate-800/50 rounded-full h-2.5 mb-2 overflow-hidden border border-white/5">
-        <div
-          className={`bg-linear-to-r ${progressColor} h-2.5 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.3)] transition-all duration-1000 ease-out`}
-          style={{ width: `${Math.min(progress, 100)}%` }}
-        />
-      </div>
-
-      <div className="flex justify-between text-[10px] text-slate-500">
-        <span className="font-medium">{progress.toFixed(0)}% pagado</span>
-        {item.interestRate > 0 && (
-          <span className="font-medium text-slate-400">
-            Interés: {item.interestRate}%
-          </span>
-        )}
-      </div>
-
-      {item.status !== "PAID" && (
-        <button
-          onClick={handleUpdatePaidAmount}
-          disabled={isUpdating}
-          className="w-full mt-4 flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white py-2.5 rounded-xl text-sm font-medium transition-colors disabled:opacity-50"
-        >
-          {isUpdating ? (
-            <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-          ) : (
-            <>
-              <CheckCircle2 className="h-4 w-4" />
-              Marcar como Pagado
-            </>
-          )}
-        </button>
-      )}
-
-      {item.interestRate > 0 && (
-        <p className="text-[10px] text-slate-600 mt-1">
-          Interés: {item.interestRate}%
-        </p>
-      )}
-
+      {/* ── Dialogs ── */}
       <LoanDialog
         currency={currency}
         open={editOpen}
         onOpenChange={setEditOpen}
         initialData={item as any}
-        hideTrigger={true}
+        hideTrigger
       />
 
-      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <AlertDialogContent className="bg-[#0c0e14] border-white/10 text-white shadow-2xl">
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar este registro?</AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-400">
-              Esta acción no se puede deshacer. Los montos volverán a
-              recalcularse en tu dashboard.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white">
-              Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-rose-600 hover:bg-rose-500 text-white border-transparent"
-              disabled={isDeleting}
-            >
-              {isDeleting ? "Eliminando..." : "Sí, Eliminar"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDeleteDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
+        title="¿Eliminar este registro?"
+        description="Esta acción no se puede deshacer. Los montos volverán a recalcularse en tu dashboard."
+      />
     </div>
   );
 }

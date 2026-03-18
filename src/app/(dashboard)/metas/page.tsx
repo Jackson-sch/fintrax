@@ -13,17 +13,15 @@ export default async function MetasPage() {
   if (!session) redirect("/login");
 
   try {
-    const [goals, currency, wallets] = await Promise.all([
+    const [goals, currency] = await Promise.all([
       getSavingGoals(),
       getUserCurrency(),
-      prisma.wallet.findMany({ where: { userId: session.user.id } }),
     ]);
 
     return (
       <MetasClient
         initialGoals={goals as any}
         currency={currency}
-        wallets={wallets as any}
       />
     );
   } catch (error) {

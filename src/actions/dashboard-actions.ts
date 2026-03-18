@@ -28,17 +28,35 @@ export async function getDashboardData() {
     include: { category: true },
   });
 
-  const aggregates = await prisma.transaction.groupBy({
-    by: ["type"],
+  const walletAggregate = await prisma.wallet.aggregate({
     where: { userId },
-    _sum: { amount: true },
+    _sum: { balance: true },
   });
 
-  const totalIncome =
-    aggregates.find((a) => a.type === "INCOME")?._sum.amount || 0;
-  const totalExpense =
-    aggregates.find((a) => a.type === "EXPENSE")?._sum.amount || 0;
-  const balance = totalIncome - totalExpense;
+  const loans = await prisma.loan.findMany({
+    where: { 
+      userId,
+      status: "ACTIVE" 
+    },
+    select: {
+      type: true,
+      amount: true,
+      paidAmount: true,
+    }
+  });
+
+  const pendingLoans = loans
+    .filter((l) => l.type === "LOAN")
+    .reduce((acc, l) => acc + (l.amount - l.paidAmount), 0);
+
+  const pendingCollections = loans
+    .filter((l) => l.type === "COLLECTION")
+    .reduce((acc, l) => acc + (l.amount - l.paidAmount), 0);
+
+  const totalReceivables = pendingCollections;
+  const totalPayables = pendingLoans;
+  const liquidBalance = walletAggregate._sum.balance || 0;
+  const netWorth = liquidBalance + totalReceivables - totalPayables;
 
   const monthlyAggregates = await prisma.transaction.groupBy({
     by: ["type"],
@@ -58,7 +76,10 @@ export async function getDashboardData() {
     monthlyAggregates.find((a) => a.type === "EXPENSE")?._sum.amount || 0;
 
   return {
-    balance,
+    balance: liquidBalance,
+    netWorth,
+    totalReceivables,
+    totalPayables,
     monthlyIncome,
     monthlyExpense,
     savingRate:

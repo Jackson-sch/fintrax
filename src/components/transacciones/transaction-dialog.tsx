@@ -40,7 +40,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { DatePicker } from "@/components/ui/date-picker";
 import { CategoryDialog } from "@/components/categorias/category-dialog";
-import { WalletDialog } from "@/components/cuentas/wallet-dialog";
+import { WalletSelect } from "@/components/cuentas/wallet-select";
 import { TagDialog } from "@/components/transacciones/tag-dialog";
 import { formatCurrency } from "@/lib/formatters";
 
@@ -95,19 +95,13 @@ export function TransactionDialog({
   const setOpen = setControlledOpen || setInternalOpen;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
-  const [isWalletDialogOpen, setIsWalletDialogOpen] = useState(false);
   const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
   const [localCategories, setLocalCategories] = useState(categories);
-  const [localWallets, setLocalWallets] = useState(wallets || []);
   const [localTags, setLocalTags] = useState(tags || []);
 
   useEffect(() => {
     setLocalCategories(categories);
   }, [categories]);
-
-  useEffect(() => {
-    if (wallets) setLocalWallets(wallets);
-  }, [wallets]);
 
   useEffect(() => {
     if (tags) setLocalTags(tags);
@@ -365,7 +359,7 @@ export function TransactionDialog({
                               </SelectValue>
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="bg-[#111318] border border-white/8 text-white rounded-xl p-2 overflow-hidden shadow-2xl max-h-[300px]">
+                          <SelectContent className="bg-[#0e1018] border border-white/8 text-white rounded-2xl p-1.5 overflow-hidden shadow-2xl shadow-black/60 max-h-[300px]">
                             {localCategories.map((category) => (
                               <SelectItem
                                 key={category.id}
@@ -433,73 +427,13 @@ export function TransactionDialog({
                       <FormLabel className="text-xs font-bold uppercase tracking-widest text-white/30">
                         Cuenta / Wallet
                       </FormLabel>
-                      <Select
-                        onValueChange={(val) => {
-                          if (val === "NEW_WALLET") {
-                            setIsWalletDialogOpen(true);
-                          } else {
-                            field.onChange(val);
-                          }
-                        }}
+                      <WalletSelect
                         value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger
-                            className={cn(
-                              "bg-white/4 border border-white/8 text-white h-14! w-full rounded-2xl px-4 transition-all",
-                              "hover:bg-white/6 hover:border-white/12",
-                              !field.value && "text-white/30",
-                            )}
-                          >
-                            <SelectValue placeholder="Efectivo, Banco...">
-                              {field.value
-                                ? localWallets?.find(
-                                    (w) => w.id === field.value,
-                                  )?.name
-                                : "Elegir"}
-                            </SelectValue>
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="bg-[#111318] border border-white/8 text-white rounded-xl p-2 shadow-2xl overflow-hidden max-h-[300px]">
-                          {localWallets?.map((wallet: any) => (
-                            <SelectItem
-                              key={wallet.id}
-                              value={wallet.id}
-                              className="rounded-xl my-0.5 focus:bg-white/10"
-                            >
-                              <div className="flex items-center justify-between w-full gap-4">
-                                <div className="flex items-center gap-2">
-                                  <div
-                                    className="w-2.5 h-2.5 rounded-full shadow-lg"
-                                    style={{
-                                      backgroundColor: wallet.color,
-                                      boxShadow: `0 0 8px ${wallet.color}40`,
-                                    }}
-                                  />
-                                  <span className="font-medium">
-                                    {wallet.name}
-                                  </span>
-                                </div>
-                                <span className="text-[10px] font-bold opacity-40 px-1.5 py-0.5 bg-white/5 rounded-md text-white">
-                                  {formatCurrency(wallet.balance, currency)}
-                                </span>
-                              </div>
-                            </SelectItem>
-                          ))}
-                          {(!localWallets || localWallets.length === 0) && (
-                            <p className="p-3 text-xs text-white/20 italic text-center">
-                              No hay cuentas
-                            </p>
-                          )}
-                          <div className="h-px bg-white/5 my-1 mx-2" />
-                          <SelectItem
-                            value="NEW_WALLET"
-                            className="rounded-xl my-0.5 cursor-pointer text-indigo-400 focus:bg-indigo-500/10 focus:text-indigo-300 font-bold justify-center"
-                          >
-                            + Nueva Cuenta
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
+                        onValueChange={field.onChange}
+                        showBalance={true}
+                        showCreateOption={true}
+                        currency={currency}
+                      />
                       <FormMessage className="text-rose-400 text-xs ml-1" />
                     </FormItem>
                   )}
@@ -621,15 +555,6 @@ export function TransactionDialog({
         onSuccess={(newCat) => {
           setLocalCategories((prev) => [...prev, newCat as any]);
           form.setValue("categoryId", newCat.id);
-        }}
-      />
-      <WalletDialog
-        open={isWalletDialogOpen}
-        onOpenChange={setIsWalletDialogOpen}
-        currency={currency}
-        onSuccess={(newWallet) => {
-          setLocalWallets((prev) => [...prev, newWallet]);
-          form.setValue("walletId", newWallet.id);
         }}
       />
       <TagDialog

@@ -30,7 +30,7 @@ export function DatePicker({ date, onChange, placeholder = "Seleccionar fecha", 
           <Button
             variant={"outline"}
             className={cn(
-              "w-full justify-start text-left font-medium h-12 rounded-xl bg-white/4 border border-white/8 text-white hover:bg-white/6 hover:border-white/20 transition-all shadow-xs",
+              "w-full justify-start text-left font-medium h-14 rounded-2xl bg-white/4 border border-white/8 text-white hover:bg-white/6 hover:border-white/20 transition-all shadow-xs",
               !date && "text-white/20",
               className
             )}

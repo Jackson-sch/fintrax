@@ -19,17 +19,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
+import { ConfirmDeleteDialog } from "@/components/comun/confirm-delete-dialog";
 
 const statusConfig = {
   COMPLETED: {
@@ -202,37 +193,14 @@ export function TransactionRow({
       />
 
       {/* Delete confirmation */}
-      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <AlertDialogContent className="bg-[#0c0e14] border border-white/8 text-white rounded-2xl shadow-2xl overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-[2px] bg-linear-to-r from-rose-500 via-pink-400 to-rose-600" />
-          <AlertDialogHeader className="pt-2">
-            <div className="flex items-center gap-3 mb-1">
-              <div className="p-2 bg-rose-500/10 rounded-xl border border-rose-500/20">
-                <Trash2 className="h-4 w-4 text-rose-400" />
-              </div>
-              <AlertDialogTitle className="text-lg font-bold">
-                ¿Eliminar esta transacción?
-              </AlertDialogTitle>
-            </div>
-            <AlertDialogDescription className="text-white/35 text-sm leading-relaxed">
-              Esta acción no se puede deshacer. El balance de tu cuenta se
-              ajustará automáticamente.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2">
-            <AlertDialogCancel className="bg-white/4 border border-white/8 text-white hover:bg-white/8 hover:text-white rounded-xl h-11">
-              Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="bg-rose-600 hover:bg-rose-500 text-white border-transparent rounded-xl h-11 font-semibold shadow-lg shadow-rose-900/40"
-            >
-              {isDeleting ? "Eliminando…" : "Sí, eliminar"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDeleteDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
+        title="¿Eliminar esta transacción?"
+        description="Esta acción no se puede deshacer. El balance de tu cuenta se ajustará automáticamente."
+      />
     </>
   );
 }

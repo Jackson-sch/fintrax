@@ -7,23 +7,10 @@ import { BudgetProgressBar } from "./budget-progress-bar";
 import { BudgetDialog } from "./budget-dialog";
 import { deleteBudget } from "@/actions/financial-actions";
 import { toast } from "sonner";
-import { MoreVertical, Edit2, Trash2, AlertTriangle } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { Edit2, AlertTriangle } from "lucide-react";
+import { CardActionMenu } from "@/components/comun/card-action-menu";
+import { ConfirmDeleteDialog } from "@/components/comun/confirm-delete-dialog";
+import { GlowEffect } from "@/components/comun/glow-effect";
 
 export interface BudgetItem {
   id: string;
@@ -89,8 +76,11 @@ export function BudgetCard({ budget, currency, categories }: BudgetCardProps) {
         percentage < 80 && "hover:border-emerald-500/20",
       )}
     >
-      {/* radial glow */}
-      <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-72 h-72 rounded-full blur-3xl opacity-10 pointer-events-none bg-emerald-400" />
+      <GlowEffect 
+        color="#34d399" 
+        className="-top-24 left-1/2 -translate-x-1/2" 
+        opacity={0.1}
+      />
 
       {/* Header */}
       <div className="flex items-start justify-between mb-4 pl-3">
@@ -109,30 +99,12 @@ export function BudgetCard({ budget, currency, categories }: BudgetCardProps) {
           </span>
         </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger className="p-1.5 rounded-xl text-white/20 hover:text-white hover:bg-white/10 transition-all outline-none">
-            <MoreVertical className="h-3.5 w-3.5" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="bg-[#111318] border border-white/8 text-slate-300 rounded-xl shadow-2xl"
-          >
-            <DropdownMenuItem
-              onClick={() => setEditOpen(true)}
-              className="cursor-pointer rounded-lg hover:bg-white/10 hover:text-white focus:bg-white/10"
-            >
-              <Edit2 className="h-3.5 w-3.5 mr-2 text-blue-400" />
-              Editar
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => setDeleteOpen(true)}
-              className="cursor-pointer rounded-lg text-rose-400 hover:bg-rose-500/15 hover:text-rose-300 focus:bg-rose-500/15 focus:text-rose-300"
-            >
-              <Trash2 className="h-3.5 w-3.5 mr-2" />
-              Eliminar
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <CardActionMenu
+          onEdit={() => setEditOpen(true)}
+          onDelete={() => setDeleteOpen(true)}
+          editIcon={Edit2}
+          className="p-1.5"
+        />
       </div>
 
       {/* Amounts */}
@@ -192,36 +164,14 @@ export function BudgetCard({ budget, currency, categories }: BudgetCardProps) {
       />
 
       {/* Delete dialog */}
-      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <AlertDialogContent className="bg-[#0c0e14] border border-white/8 text-white rounded-2xl shadow-2xl">
-          <div className="absolute top-0 left-0 w-full h-[2px] bg-linear-to-r from-rose-500 via-pink-400 to-rose-600 rounded-t-2xl" />
-          <AlertDialogHeader className="pt-2">
-            <div className="flex items-center gap-3 mb-1">
-              <div className="p-2 bg-rose-500/10 rounded-xl border border-rose-500/20">
-                <Trash2 className="h-4 w-4 text-rose-400" />
-              </div>
-              <AlertDialogTitle className="text-lg font-bold">
-                ¿Eliminar este presupuesto?
-              </AlertDialogTitle>
-            </div>
-            <AlertDialogDescription className="text-white/35 text-sm leading-relaxed">
-              Se eliminará el límite de gasto para esta categoría en este mes.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2">
-            <AlertDialogCancel className="bg-white/4 border border-white/8 text-white hover:bg-white/8 hover:text-white rounded-xl h-11">
-              Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="bg-rose-600 hover:bg-rose-500 text-white border-transparent rounded-xl h-11 font-semibold shadow-lg shadow-rose-900/40"
-            >
-              {isDeleting ? "Eliminando…" : "Sí, eliminar"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDeleteDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
+        title="¿Eliminar este presupuesto?"
+        description="Se eliminará el límite de gasto para esta categoría en este mes."
+      />
     </div>
   );
 }

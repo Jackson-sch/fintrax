@@ -4,24 +4,17 @@ import {
   Repeat,
   TrendingUp,
   TrendingDown,
-  MoreVertical,
-  Trash2,
   CalendarDays,
-  Pencil,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatLongDate } from "@/lib/formatters";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { deleteRecurringTransaction } from "@/actions/financial-actions";
 import { toast } from "sonner";
 import { RecurrenceFrequency, TransactionType } from "@prisma-client";
+import { ConfirmDeleteDialog } from "@/components/comun/confirm-delete-dialog";
+import { CardActionMenu } from "@/components/comun/card-action-menu";
+import { GlowEffect } from "@/components/comun/glow-effect";
 
 interface RecurringCardProps {
   recurring: {
@@ -49,18 +42,19 @@ const frequencyLabels: Record<RecurrenceFrequency, string> = {
 };
 
 export function RecurringCard({ recurring, currency, onEdit }: RecurringCardProps) {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
-    if (confirm("¿Estás seguro de eliminar esta regla de recurrencia?")) {
-      setIsDeleting(true);
-      try {
-        await deleteRecurringTransaction(recurring.id);
-        toast.success("Recurrencia eliminada correctamente");
-      } catch {
-        toast.error("Error al eliminar la recurrencia");
-        setIsDeleting(false);
-      }
+    setIsDeleting(true);
+    try {
+      await deleteRecurringTransaction(recurring.id);
+      toast.success("Recurrencia eliminada correctamente");
+      setShowDeleteDialog(false);
+    } catch {
+      toast.error("Error al eliminar la recurrencia");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -68,13 +62,12 @@ export function RecurringCard({ recurring, currency, onEdit }: RecurringCardProp
 
   return (
     <div className="relative bg-white/3 border border-white/6 rounded-2xl overflow-hidden group hover:bg-white/5 transition-all duration-300">
-       {/* Subtle radial glow */}
-        <div
-          className={cn(
-            "absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full blur-3xl opacity-10 pointer-events-none",
-            isIncome ? "bg-emerald-400" : "bg-rose-400",
-          )}
-        />
+      <GlowEffect 
+        color={isIncome ? "#34d399" : "#fb7185"} 
+        className="-top-24 left-1/2 -translate-x-1/2" 
+        size="w-96 h-96"
+        opacity={0.1}
+      />
 
       <div className="px-5 pt-5 pb-4 pl-6 space-y-4">
 
@@ -107,41 +100,10 @@ export function RecurringCard({ recurring, currency, onEdit }: RecurringCardProp
             </div>
           </div>
 
-          {/* Actions menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 shrink-0 text-white/20 hover:text-white hover:bg-white/8 rounded-xl transition-all"
-                >
-                  <MoreVertical className="h-3.5 w-3.5" />
-                </Button>
-              }
-            />
-            <DropdownMenuContent
-              align="end"
-              className="bg-[#111318] border border-white/8 text-white rounded-xl shadow-2xl"
-            >
-              <DropdownMenuItem
-                onClick={() => onEdit?.(recurring.id)}
-                className="cursor-pointer rounded-lg hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white"
-              >
-                <Pencil className="h-3.5 w-3.5 mr-2 text-blue-400" />
-                Editar
-              </DropdownMenuItem>
-              <div className="h-px bg-white/5 my-1" />
-              <DropdownMenuItem
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className="cursor-pointer rounded-lg text-rose-400 hover:bg-rose-500/15 hover:text-rose-300 focus:bg-rose-500/15 focus:text-rose-300 disabled:opacity-40"
-              >
-                <Trash2 className="h-3.5 w-3.5 mr-2" />
-                {isDeleting ? "Eliminando…" : "Eliminar"}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <CardActionMenu
+            onEdit={() => onEdit?.(recurring.id)}
+            onDelete={() => setShowDeleteDialog(true)}
+          />
         </div>
 
         {/* Amount + frequency */}
@@ -171,6 +133,15 @@ export function RecurringCard({ recurring, currency, onEdit }: RecurringCardProp
           </span>
         </div>
       </div>
+
+      <ConfirmDeleteDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
+        title="¿Eliminar recurrencia?"
+        description={`Estás a punto de eliminar la regla para "${recurring.description}". No se generarán más transacciones automáticas a partir de ella.`}
+      />
     </div>
   );
 }

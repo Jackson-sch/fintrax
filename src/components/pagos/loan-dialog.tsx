@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -14,6 +14,7 @@ import {
   FileText,
   CheckCircle2,
   PencilLine,
+  Wallet as WalletIcon,
 } from "lucide-react";
 import {
   Dialog,
@@ -36,6 +37,7 @@ import { addLoan, updateLoan } from "@/actions/financial-actions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { DatePicker } from "@/components/ui/date-picker";
+import { WalletSelect } from "@/components/cuentas/wallet-select";
 
 const formSchema = z.object({
   entityName: z.string().min(2, "Nombre de la entidad requerido"),
@@ -47,6 +49,7 @@ const formSchema = z.object({
     .optional(),
   dueDate: z.date().optional(),
   notes: z.string().optional(),
+  walletId: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -63,6 +66,7 @@ interface LoanDialogProps {
     interestRate: number;
     dueDate?: Date | null;
     notes?: string | null;
+    walletId?: string | null;
   };
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -92,6 +96,7 @@ export function LoanDialog({
       interestRate: initialData?.interestRate || 0,
       dueDate: initialData?.dueDate ? new Date(initialData.dueDate) : undefined,
       notes: initialData?.notes || "",
+      walletId: initialData?.walletId || "NO_WALLET",
     },
   });
 
@@ -100,10 +105,15 @@ export function LoanDialog({
   async function onSubmit(values: FormValues) {
     setIsSubmitting(true);
     try {
+      const submitData = {
+        ...values,
+        walletId: values.walletId === "NO_WALLET" ? null : values.walletId,
+      };
+
       if (initialData) {
-        await updateLoan(initialData.id, values as any);
+        await updateLoan(initialData.id, submitData as any);
       } else {
-        await addLoan(values as any);
+        await addLoan(submitData as any);
       }
       toast.success(
         values.type === "COLLECTION"
@@ -122,6 +132,7 @@ export function LoanDialog({
         interestRate: 0,
         notes: "",
         dueDate: undefined,
+        walletId: "NO_WALLET",
       });
     } catch (error) {
       console.error(error);
@@ -146,7 +157,6 @@ export function LoanDialog({
         bg: "bg-emerald-500/10",
         text: "text-emerald-400",
         gradient: "from-emerald-500 to-teal-500",
-        strip: "from-emerald-500 via-teal-400 to-emerald-600",
         buttonBg: "bg-emerald-600 hover:bg-emerald-500 shadow-emerald-700/40",
         glowColor: "bg-emerald-400",
       }
@@ -156,7 +166,6 @@ export function LoanDialog({
         bg: "bg-amber-500/10",
         text: "text-amber-400",
         gradient: "from-amber-500 to-orange-500",
-        strip: "from-amber-500 via-orange-400 to-amber-600",
         buttonBg: "bg-amber-600 hover:bg-amber-500 shadow-amber-700/40",
         glowColor: "bg-amber-400",
       };
@@ -170,7 +179,9 @@ export function LoanDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {!hideTrigger && <DialogTrigger render={trigger || defaultTrigger} />}
+      {!hideTrigger && (
+        <DialogTrigger render={trigger || defaultTrigger} />
+      )}
 
       <DialogContent
         className={cn(
@@ -178,7 +189,6 @@ export function LoanDialog({
           accent.glow,
         )}
       >
-        {/* Radial Glow */}
         <div
           className={cn(
             "absolute -top-24 left-1/2 -translate-x-1/2 w-72 h-72 rounded-full blur-3xl opacity-10 pointer-events-none",
@@ -359,6 +369,26 @@ export function LoanDialog({
 
               <FormField
                 control={form.control}
+                name="walletId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-bold uppercase tracking-widest text-white/30">
+                      Cuenta asociada
+                    </FormLabel>
+                    <WalletSelect
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      currency={currency}
+                      allowNone={true}
+                      showBalance={false}
+                    />
+                    <FormMessage className="text-rose-400 text-xs ml-1" />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="notes"
                 render={({ field }) => (
                   <FormItem>
@@ -402,8 +432,8 @@ export function LoanDialog({
                       {initialData
                         ? "Guardar cambios"
                         : isCollection
-                          ? "Confirmar cobro"
-                          : "Confirmar préstamo"}
+                        ? "Confirmar cobro"
+                        : "Confirmar préstamo"}
                     </>
                   )}
                 </span>

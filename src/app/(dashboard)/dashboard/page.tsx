@@ -79,11 +79,11 @@ export default async function DashboardPage() {
 
             <div className="relative z-10 space-y-1">
               <div className="flex items-center gap-2 mb-3">
-                <div className="p-2 rounded-xl bg-violet-500/15 border border-violet-500/25">
-                  <Wallet className="h-4 w-4 text-violet-400" />
+                <div className="p-2 rounded-xl bg-emerald-500/15 border border-emerald-500/25">
+                  <Wallet className="h-4 w-4 text-emerald-400" />
                 </div>
                 <p className="text-[10px] uppercase tracking-widest text-white/30 font-bold">
-                  Balance total
+                  Saldo Disponible
                 </p>
               </div>
               <h3
@@ -94,11 +94,17 @@ export default async function DashboardPage() {
               >
                 {formatCurrency(balance, currency)}
               </h3>
-              <p className="text-xs text-white/25 font-medium">
-                {isPositiveBalance
-                  ? "Saldo positivo"
-                  : "Saldo negativo — revisa tus gastos"}
-              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-xs text-white/25 font-medium">
+                  {isPositiveBalance
+                    ? "Saldo positivo"
+                    : "Saldo negativo — revisa tus gastos"}
+                </p>
+                <span className="text-white/10">•</span>
+                <p className="text-[10px] text-violet-400/80 font-bold uppercase tracking-tight">
+                  Patrimonio Neto: {formatCurrency(data.netWorth, currency)}
+                </p>
+              </div>
             </div>
 
             {/* Action buttons */}

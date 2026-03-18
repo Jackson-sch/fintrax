@@ -287,7 +287,7 @@ export function RecurringDialog({
                             </SelectValue>
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#111318] border border-white/8 text-white rounded-2xl shadow-2xl">
+                        <SelectContent className="bg-[#0e1018] border border-white/8 text-white rounded-2xl p-1.5 shadow-2xl shadow-black/60">
                           {FREQUENCIES.map(({ value, label }) => (
                             <SelectItem
                               key={value}
@@ -334,7 +334,7 @@ export function RecurringDialog({
                             </SelectValue>
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-[#111318] border border-white/8 text-white rounded-2xl shadow-2xl max-h-[300px]">
+                        <SelectContent className="bg-[#0e1018] border border-white/8 text-white rounded-2xl p-1.5 shadow-2xl shadow-black/60 max-h-[300px]">
                           {localCategories.map((cat) => (
                             <SelectItem
                               key={cat.id}

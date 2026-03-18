@@ -19,11 +19,13 @@ interface WalletItem {
 interface CuentasClientProps {
   initialWallets: WalletItem[];
   currency: string;
+  netWorth: number;
 }
 
 export function CuentasClient({
   initialWallets,
   currency,
+  netWorth,
 }: CuentasClientProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editWallet, setEditWallet] = useState<WalletItem | null>(null);
@@ -54,9 +56,19 @@ export function CuentasClient({
                   currency,
                 }).format(totalBalance)}
               </h2>
-              <p className="text-sm text-white/40 font-medium">
-                Suma total de todas tus cuentas activas.
-              </p>
+              <div className="flex items-center gap-3">
+                <p className="text-sm text-white/40 font-medium">
+                  Suma total de todas tus cuentas activas.
+                </p>
+                <span className="text-white/10">•</span>
+                <p className="text-xs text-indigo-400/80 font-bold uppercase tracking-tight">
+                  Patrimonio Neto:{" "}
+                  {new Intl.NumberFormat("es-PE", {
+                    style: "currency",
+                    currency,
+                  }).format(netWorth)}
+                </p>
+              </div>
             </div>
 
             <div className="relative z-10">

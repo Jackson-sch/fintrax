@@ -1,24 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { cn } from "@/lib/utils";
-import { Edit2, MoreVertical, Wallet, Landmark, CreditCard, Banknote, Trash2 } from "lucide-react";
+import { Edit2, Wallet, Landmark, CreditCard, Banknote } from "lucide-react";
 import { formatCurrency } from "@/lib/formatters";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { CardActionMenu } from "@/components/comun/card-action-menu";
 import { deleteWallet } from "@/actions/financial-actions";
 import { toast } from "sonner";
+import { ConfirmDeleteDialog } from "@/components/comun/confirm-delete-dialog";
+import { GlowEffect } from "@/components/comun/glow-effect";
 
 interface WalletCardProps {
   wallet: {
@@ -61,10 +50,11 @@ export function WalletCard({ wallet, currency, onEdit }: WalletCardProps) {
   return (
     <>
       <div className="group relative bg-white/3 border border-white/6 rounded-[32px] p-6 hover:bg-white/5 transition-all duration-500 overflow-hidden">
-        {/* Decorative background glow */}
-        <div 
-          className="absolute -right-10 -top-10 w-32 h-32 rounded-full blur-[60px] opacity-10 transition-opacity group-hover:opacity-20 pointer-events-none"
-          style={{ backgroundColor: wallet.color }}
+        <GlowEffect 
+          color={wallet.color} 
+          className="-right-10 -top-10 group-hover:opacity-20" 
+          size="w-32 h-32"
+          opacity={0.1}
         />
 
         <div className="relative z-10 flex items-start justify-between mb-6">
@@ -75,21 +65,11 @@ export function WalletCard({ wallet, currency, onEdit }: WalletCardProps) {
             {getIcon(wallet.icon)}
           </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger className="p-2 rounded-xl text-white/20 hover:text-white/60 hover:bg-white/5 transition-all outline-none cursor-pointer">
-              <MoreVertical className="h-5 w-5" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-[#0c0e14] border-white/10 text-white min-w-[160px]">
-              <DropdownMenuItem onClick={onEdit} className="gap-2 focus:bg-white/5 cursor-pointer py-3">
-                <Edit2 className="h-4 w-4 text-indigo-400" />
-                Editar
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true)} className="gap-2 focus:bg-red-500/10 text-red-500 focus:text-red-400 cursor-pointer py-3">
-                <Trash2 className="h-4 w-4" />
-                Eliminar
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <CardActionMenu
+            onEdit={onEdit}
+            onDelete={() => setIsDeleteDialogOpen(true)}
+            editIcon={Edit2}
+          />
         </div>
 
         <div className="space-y-1 relative z-10">
@@ -107,36 +87,14 @@ export function WalletCard({ wallet, currency, onEdit }: WalletCardProps) {
         </div>
       </div>
 
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-[400px] bg-[#0c0e14] border-white/10 text-white rounded-3xl p-6">
-          <DialogHeader className="mb-2">
-            <DialogTitle className="text-xl font-bold text-white">¿Eliminar cuenta?</DialogTitle>
-          </DialogHeader>
-          <div className="py-2">
-            <p className="text-white/60 text-sm leading-relaxed">
-              Estás a punto de eliminar la cuenta <strong className="text-white">{wallet.name}</strong>. Esta acción no se puede deshacer y perderás todos los registros asociados.
-            </p>
-          </div>
-          <div className="flex gap-3 justify-end mt-4">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setIsDeleteDialogOpen(false)}
-              className="hover:bg-white/5 text-white/60 hover:text-white rounded-xl"
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="button"
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white rounded-xl transition-all"
-            >
-              {isDeleting ? "Eliminando..." : "Eliminar"}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDeleteDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
+        title="¿Eliminar cuenta?"
+        description={`Estás a punto de eliminar la cuenta "${wallet.name}". Esta acción no se puede deshacer y perderás todos los registros asociados.`}
+      />
     </>
   );
 }

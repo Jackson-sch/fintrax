@@ -112,30 +112,33 @@ export default async function TransaccionesPage({
             <div
               className={
                 isPositiveBalance
-                  ? "p-2.5 rounded-xl bg-violet-500/10 border border-violet-500/20 shrink-0"
+                  ? "p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 shrink-0"
                   : "p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 shrink-0"
               }
             >
               <Wallet
                 className={
                   isPositiveBalance
-                    ? "h-4 w-4 text-violet-400"
+                    ? "h-4 w-4 text-emerald-400"
                     : "h-4 w-4 text-amber-400"
                 }
               />
             </div>
             <div>
               <p className="text-[10px] uppercase tracking-widest text-white/25 font-bold mb-0.5">
-                Balance total
+                Saldo disponible
               </p>
               <p
                 className={
                   isPositiveBalance
-                    ? "text-xl font-bold text-violet-400"
+                    ? "text-xl font-bold text-white"
                     : "text-xl font-bold text-amber-400"
                 }
               >
                 {formatCurrency(balance, currency)}
+              </p>
+              <p className="text-[9px] text-violet-400/60 font-bold uppercase tracking-tight mt-0.5">
+                Patrimonio: {formatCurrency(totalsData.netWorth, currency)}
               </p>
             </div>
           </div>

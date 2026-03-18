@@ -201,7 +201,8 @@ exports.Prisma.LoanScalarFieldEnum = {
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  userId: 'userId'
+  userId: 'userId',
+  walletId: 'walletId'
 };
 
 exports.Prisma.AlertScalarFieldEnum = {

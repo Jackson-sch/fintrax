@@ -2346,10 +2346,12 @@ export namespace Prisma {
 
   export type WalletCountOutputType = {
     transactions: number
+    loans: number
   }
 
   export type WalletCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     transactions?: boolean | WalletCountOutputTypeCountTransactionsArgs
+    loans?: boolean | WalletCountOutputTypeCountLoansArgs
   }
 
   // Custom InputTypes
@@ -2368,6 +2370,13 @@ export namespace Prisma {
    */
   export type WalletCountOutputTypeCountTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TransactionWhereInput
+  }
+
+  /**
+   * WalletCountOutputType without action
+   */
+  export type WalletCountOutputTypeCountLoansArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LoanWhereInput
   }
 
 
@@ -9525,6 +9534,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     userId: string | null
+    walletId: string | null
   }
 
   export type LoanMaxAggregateOutputType = {
@@ -9540,6 +9550,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     userId: string | null
+    walletId: string | null
   }
 
   export type LoanCountAggregateOutputType = {
@@ -9555,6 +9566,7 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     userId: number
+    walletId: number
     _all: number
   }
 
@@ -9584,6 +9596,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     userId?: true
+    walletId?: true
   }
 
   export type LoanMaxAggregateInputType = {
@@ -9599,6 +9612,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     userId?: true
+    walletId?: true
   }
 
   export type LoanCountAggregateInputType = {
@@ -9614,6 +9628,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     userId?: true
+    walletId?: true
     _all?: true
   }
 
@@ -9716,6 +9731,7 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     userId: string
+    walletId: string | null
     _count: LoanCountAggregateOutputType | null
     _avg: LoanAvgAggregateOutputType | null
     _sum: LoanSumAggregateOutputType | null
@@ -9750,7 +9766,9 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
+    walletId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    wallet?: boolean | Loan$walletArgs<ExtArgs>
   }, ExtArgs["result"]["loan"]>
 
   export type LoanSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -9766,7 +9784,9 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
+    walletId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    wallet?: boolean | Loan$walletArgs<ExtArgs>
   }, ExtArgs["result"]["loan"]>
 
   export type LoanSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -9782,7 +9802,9 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
+    walletId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    wallet?: boolean | Loan$walletArgs<ExtArgs>
   }, ExtArgs["result"]["loan"]>
 
   export type LoanSelectScalar = {
@@ -9798,23 +9820,28 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
+    walletId?: boolean
   }
 
-  export type LoanOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "entityName" | "type" | "amount" | "paidAmount" | "interestRate" | "status" | "dueDate" | "notes" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["loan"]>
+  export type LoanOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "entityName" | "type" | "amount" | "paidAmount" | "interestRate" | "status" | "dueDate" | "notes" | "createdAt" | "updatedAt" | "userId" | "walletId", ExtArgs["result"]["loan"]>
   export type LoanInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    wallet?: boolean | Loan$walletArgs<ExtArgs>
   }
   export type LoanIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    wallet?: boolean | Loan$walletArgs<ExtArgs>
   }
   export type LoanIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    wallet?: boolean | Loan$walletArgs<ExtArgs>
   }
 
   export type $LoanPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Loan"
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
+      wallet: Prisma.$WalletPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -9829,6 +9856,7 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date
       userId: string
+      walletId: string | null
     }, ExtArgs["result"]["loan"]>
     composites: {}
   }
@@ -10224,6 +10252,7 @@ export namespace Prisma {
   export interface Prisma__LoanClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    wallet<T extends Loan$walletArgs<ExtArgs> = {}>(args?: Subset<T, Loan$walletArgs<ExtArgs>>): Prisma__WalletClient<$Result.GetResult<Prisma.$WalletPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10265,6 +10294,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Loan", 'DateTime'>
     readonly updatedAt: FieldRef<"Loan", 'DateTime'>
     readonly userId: FieldRef<"Loan", 'String'>
+    readonly walletId: FieldRef<"Loan", 'String'>
   }
     
 
@@ -10658,6 +10688,25 @@ export namespace Prisma {
      * Limit how many Loans to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Loan.wallet
+   */
+  export type Loan$walletArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Wallet
+     */
+    select?: WalletSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Wallet
+     */
+    omit?: WalletOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WalletInclude<ExtArgs> | null
+    where?: WalletWhereInput
   }
 
   /**
@@ -15528,6 +15577,7 @@ export namespace Prisma {
     userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     transactions?: boolean | Wallet$transactionsArgs<ExtArgs>
+    loans?: boolean | Wallet$loansArgs<ExtArgs>
     _count?: boolean | WalletCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["wallet"]>
 
@@ -15573,6 +15623,7 @@ export namespace Prisma {
   export type WalletInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     transactions?: boolean | Wallet$transactionsArgs<ExtArgs>
+    loans?: boolean | Wallet$loansArgs<ExtArgs>
     _count?: boolean | WalletCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type WalletIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -15587,6 +15638,7 @@ export namespace Prisma {
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
       transactions: Prisma.$TransactionPayload<ExtArgs>[]
+      loans: Prisma.$LoanPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -15994,6 +16046,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     transactions<T extends Wallet$transactionsArgs<ExtArgs> = {}>(args?: Subset<T, Wallet$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    loans<T extends Wallet$loansArgs<ExtArgs> = {}>(args?: Subset<T, Wallet$loansArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LoanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -16449,6 +16502,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TransactionScalarFieldEnum | TransactionScalarFieldEnum[]
+  }
+
+  /**
+   * Wallet.loans
+   */
+  export type Wallet$loansArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Loan
+     */
+    select?: LoanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Loan
+     */
+    omit?: LoanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LoanInclude<ExtArgs> | null
+    where?: LoanWhereInput
+    orderBy?: LoanOrderByWithRelationInput | LoanOrderByWithRelationInput[]
+    cursor?: LoanWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LoanScalarFieldEnum | LoanScalarFieldEnum[]
   }
 
   /**
@@ -18781,7 +18858,8 @@ export namespace Prisma {
     notes: 'notes',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    userId: 'userId'
+    userId: 'userId',
+    walletId: 'walletId'
   };
 
   export type LoanScalarFieldEnum = (typeof LoanScalarFieldEnum)[keyof typeof LoanScalarFieldEnum]
@@ -19570,7 +19648,9 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Loan"> | Date | string
     updatedAt?: DateTimeFilter<"Loan"> | Date | string
     userId?: StringFilter<"Loan"> | string
+    walletId?: StringNullableFilter<"Loan"> | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    wallet?: XOR<WalletNullableScalarRelationFilter, WalletWhereInput> | null
   }
 
   export type LoanOrderByWithRelationInput = {
@@ -19586,7 +19666,9 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
+    walletId?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
+    wallet?: WalletOrderByWithRelationInput
   }
 
   export type LoanWhereUniqueInput = Prisma.AtLeast<{
@@ -19605,7 +19687,9 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Loan"> | Date | string
     updatedAt?: DateTimeFilter<"Loan"> | Date | string
     userId?: StringFilter<"Loan"> | string
+    walletId?: StringNullableFilter<"Loan"> | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    wallet?: XOR<WalletNullableScalarRelationFilter, WalletWhereInput> | null
   }, "id">
 
   export type LoanOrderByWithAggregationInput = {
@@ -19621,6 +19705,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
+    walletId?: SortOrderInput | SortOrder
     _count?: LoanCountOrderByAggregateInput
     _avg?: LoanAvgOrderByAggregateInput
     _max?: LoanMaxOrderByAggregateInput
@@ -19644,6 +19729,7 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Loan"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Loan"> | Date | string
     userId?: StringWithAggregatesFilter<"Loan"> | string
+    walletId?: StringNullableWithAggregatesFilter<"Loan"> | string | null
   }
 
   export type AlertWhereInput = {
@@ -19981,6 +20067,7 @@ export namespace Prisma {
     userId?: StringFilter<"Wallet"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     transactions?: TransactionListRelationFilter
+    loans?: LoanListRelationFilter
   }
 
   export type WalletOrderByWithRelationInput = {
@@ -19995,6 +20082,7 @@ export namespace Prisma {
     userId?: SortOrder
     user?: UserOrderByWithRelationInput
     transactions?: TransactionOrderByRelationAggregateInput
+    loans?: LoanOrderByRelationAggregateInput
   }
 
   export type WalletWhereUniqueInput = Prisma.AtLeast<{
@@ -20012,6 +20100,7 @@ export namespace Prisma {
     userId?: StringFilter<"Wallet"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     transactions?: TransactionListRelationFilter
+    loans?: LoanListRelationFilter
   }, "id">
 
   export type WalletOrderByWithAggregationInput = {
@@ -20734,6 +20823,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutLoansInput
+    wallet?: WalletCreateNestedOneWithoutLoansInput
   }
 
   export type LoanUncheckedCreateInput = {
@@ -20749,6 +20839,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
+    walletId?: string | null
   }
 
   export type LoanUpdateInput = {
@@ -20764,6 +20855,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutLoansNestedInput
+    wallet?: WalletUpdateOneWithoutLoansNestedInput
   }
 
   export type LoanUncheckedUpdateInput = {
@@ -20779,6 +20871,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
+    walletId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type LoanCreateManyInput = {
@@ -20794,6 +20887,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
+    walletId?: string | null
   }
 
   export type LoanUpdateManyMutationInput = {
@@ -20823,6 +20917,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
+    walletId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AlertCreateInput = {
@@ -21173,6 +21268,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutWalletsInput
     transactions?: TransactionCreateNestedManyWithoutWalletInput
+    loans?: LoanCreateNestedManyWithoutWalletInput
   }
 
   export type WalletUncheckedCreateInput = {
@@ -21186,6 +21282,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     userId: string
     transactions?: TransactionUncheckedCreateNestedManyWithoutWalletInput
+    loans?: LoanUncheckedCreateNestedManyWithoutWalletInput
   }
 
   export type WalletUpdateInput = {
@@ -21199,6 +21296,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutWalletsNestedInput
     transactions?: TransactionUpdateManyWithoutWalletNestedInput
+    loans?: LoanUpdateManyWithoutWalletNestedInput
   }
 
   export type WalletUncheckedUpdateInput = {
@@ -21212,6 +21310,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     transactions?: TransactionUncheckedUpdateManyWithoutWalletNestedInput
+    loans?: LoanUncheckedUpdateManyWithoutWalletNestedInput
   }
 
   export type WalletCreateManyInput = {
@@ -21968,6 +22067,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
+    walletId?: SortOrder
   }
 
   export type LoanAvgOrderByAggregateInput = {
@@ -21989,6 +22089,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
+    walletId?: SortOrder
   }
 
   export type LoanMinOrderByAggregateInput = {
@@ -22004,6 +22105,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
+    walletId?: SortOrder
   }
 
   export type LoanSumOrderByAggregateInput = {
@@ -23197,6 +23299,12 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type WalletCreateNestedOneWithoutLoansInput = {
+    create?: XOR<WalletCreateWithoutLoansInput, WalletUncheckedCreateWithoutLoansInput>
+    connectOrCreate?: WalletCreateOrConnectWithoutLoansInput
+    connect?: WalletWhereUniqueInput
+  }
+
   export type EnumLoanTypeFieldUpdateOperationsInput = {
     set?: $Enums.LoanType
   }
@@ -23211,6 +23319,16 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutLoansInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutLoansInput, UserUpdateWithoutLoansInput>, UserUncheckedUpdateWithoutLoansInput>
+  }
+
+  export type WalletUpdateOneWithoutLoansNestedInput = {
+    create?: XOR<WalletCreateWithoutLoansInput, WalletUncheckedCreateWithoutLoansInput>
+    connectOrCreate?: WalletCreateOrConnectWithoutLoansInput
+    upsert?: WalletUpsertWithoutLoansInput
+    disconnect?: WalletWhereInput | boolean
+    delete?: WalletWhereInput | boolean
+    connect?: WalletWhereUniqueInput
+    update?: XOR<XOR<WalletUpdateToOneWithWhereWithoutLoansInput, WalletUpdateWithoutLoansInput>, WalletUncheckedUpdateWithoutLoansInput>
   }
 
   export type UserCreateNestedOneWithoutAlertsInput = {
@@ -23326,11 +23444,25 @@ export namespace Prisma {
     connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
   }
 
+  export type LoanCreateNestedManyWithoutWalletInput = {
+    create?: XOR<LoanCreateWithoutWalletInput, LoanUncheckedCreateWithoutWalletInput> | LoanCreateWithoutWalletInput[] | LoanUncheckedCreateWithoutWalletInput[]
+    connectOrCreate?: LoanCreateOrConnectWithoutWalletInput | LoanCreateOrConnectWithoutWalletInput[]
+    createMany?: LoanCreateManyWalletInputEnvelope
+    connect?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+  }
+
   export type TransactionUncheckedCreateNestedManyWithoutWalletInput = {
     create?: XOR<TransactionCreateWithoutWalletInput, TransactionUncheckedCreateWithoutWalletInput> | TransactionCreateWithoutWalletInput[] | TransactionUncheckedCreateWithoutWalletInput[]
     connectOrCreate?: TransactionCreateOrConnectWithoutWalletInput | TransactionCreateOrConnectWithoutWalletInput[]
     createMany?: TransactionCreateManyWalletInputEnvelope
     connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+  }
+
+  export type LoanUncheckedCreateNestedManyWithoutWalletInput = {
+    create?: XOR<LoanCreateWithoutWalletInput, LoanUncheckedCreateWithoutWalletInput> | LoanCreateWithoutWalletInput[] | LoanUncheckedCreateWithoutWalletInput[]
+    connectOrCreate?: LoanCreateOrConnectWithoutWalletInput | LoanCreateOrConnectWithoutWalletInput[]
+    createMany?: LoanCreateManyWalletInputEnvelope
+    connect?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
   }
 
   export type UserUpdateOneRequiredWithoutWalletsNestedInput = {
@@ -23355,6 +23487,20 @@ export namespace Prisma {
     deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
   }
 
+  export type LoanUpdateManyWithoutWalletNestedInput = {
+    create?: XOR<LoanCreateWithoutWalletInput, LoanUncheckedCreateWithoutWalletInput> | LoanCreateWithoutWalletInput[] | LoanUncheckedCreateWithoutWalletInput[]
+    connectOrCreate?: LoanCreateOrConnectWithoutWalletInput | LoanCreateOrConnectWithoutWalletInput[]
+    upsert?: LoanUpsertWithWhereUniqueWithoutWalletInput | LoanUpsertWithWhereUniqueWithoutWalletInput[]
+    createMany?: LoanCreateManyWalletInputEnvelope
+    set?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+    disconnect?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+    delete?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+    connect?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+    update?: LoanUpdateWithWhereUniqueWithoutWalletInput | LoanUpdateWithWhereUniqueWithoutWalletInput[]
+    updateMany?: LoanUpdateManyWithWhereWithoutWalletInput | LoanUpdateManyWithWhereWithoutWalletInput[]
+    deleteMany?: LoanScalarWhereInput | LoanScalarWhereInput[]
+  }
+
   export type TransactionUncheckedUpdateManyWithoutWalletNestedInput = {
     create?: XOR<TransactionCreateWithoutWalletInput, TransactionUncheckedCreateWithoutWalletInput> | TransactionCreateWithoutWalletInput[] | TransactionUncheckedCreateWithoutWalletInput[]
     connectOrCreate?: TransactionCreateOrConnectWithoutWalletInput | TransactionCreateOrConnectWithoutWalletInput[]
@@ -23367,6 +23513,20 @@ export namespace Prisma {
     update?: TransactionUpdateWithWhereUniqueWithoutWalletInput | TransactionUpdateWithWhereUniqueWithoutWalletInput[]
     updateMany?: TransactionUpdateManyWithWhereWithoutWalletInput | TransactionUpdateManyWithWhereWithoutWalletInput[]
     deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
+  }
+
+  export type LoanUncheckedUpdateManyWithoutWalletNestedInput = {
+    create?: XOR<LoanCreateWithoutWalletInput, LoanUncheckedCreateWithoutWalletInput> | LoanCreateWithoutWalletInput[] | LoanUncheckedCreateWithoutWalletInput[]
+    connectOrCreate?: LoanCreateOrConnectWithoutWalletInput | LoanCreateOrConnectWithoutWalletInput[]
+    upsert?: LoanUpsertWithWhereUniqueWithoutWalletInput | LoanUpsertWithWhereUniqueWithoutWalletInput[]
+    createMany?: LoanCreateManyWalletInputEnvelope
+    set?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+    disconnect?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+    delete?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+    connect?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+    update?: LoanUpdateWithWhereUniqueWithoutWalletInput | LoanUpdateWithWhereUniqueWithoutWalletInput[]
+    updateMany?: LoanUpdateManyWithWhereWithoutWalletInput | LoanUpdateManyWithWhereWithoutWalletInput[]
+    deleteMany?: LoanScalarWhereInput | LoanScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutTagsInput = {
@@ -23847,6 +24007,7 @@ export namespace Prisma {
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    wallet?: WalletCreateNestedOneWithoutLoansInput
   }
 
   export type LoanUncheckedCreateWithoutUserInput = {
@@ -23861,6 +24022,7 @@ export namespace Prisma {
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    walletId?: string | null
   }
 
   export type LoanCreateOrConnectWithoutUserInput = {
@@ -24043,6 +24205,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     transactions?: TransactionCreateNestedManyWithoutWalletInput
+    loans?: LoanCreateNestedManyWithoutWalletInput
   }
 
   export type WalletUncheckedCreateWithoutUserInput = {
@@ -24055,6 +24218,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     transactions?: TransactionUncheckedCreateNestedManyWithoutWalletInput
+    loans?: LoanUncheckedCreateNestedManyWithoutWalletInput
   }
 
   export type WalletCreateOrConnectWithoutUserInput = {
@@ -24255,6 +24419,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Loan"> | Date | string
     updatedAt?: DateTimeFilter<"Loan"> | Date | string
     userId?: StringFilter<"Loan"> | string
+    walletId?: StringNullableFilter<"Loan"> | string | null
   }
 
   export type AlertUpsertWithWhereUniqueWithoutUserInput = {
@@ -25048,6 +25213,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutWalletsInput
+    loans?: LoanCreateNestedManyWithoutWalletInput
   }
 
   export type WalletUncheckedCreateWithoutTransactionsInput = {
@@ -25060,6 +25226,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
+    loans?: LoanUncheckedCreateNestedManyWithoutWalletInput
   }
 
   export type WalletCreateOrConnectWithoutTransactionsInput = {
@@ -25197,6 +25364,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutWalletsNestedInput
+    loans?: LoanUpdateManyWithoutWalletNestedInput
   }
 
   export type WalletUncheckedUpdateWithoutTransactionsInput = {
@@ -25209,6 +25377,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
+    loans?: LoanUncheckedUpdateManyWithoutWalletNestedInput
   }
 
   export type TagUpsertWithWhereUniqueWithoutTransactionsInput = {
@@ -25276,6 +25445,37 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutLoansInput, UserUncheckedCreateWithoutLoansInput>
   }
 
+  export type WalletCreateWithoutLoansInput = {
+    id?: string
+    name: string
+    balance?: number
+    currency?: string
+    color?: string
+    icon?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutWalletsInput
+    transactions?: TransactionCreateNestedManyWithoutWalletInput
+  }
+
+  export type WalletUncheckedCreateWithoutLoansInput = {
+    id?: string
+    name: string
+    balance?: number
+    currency?: string
+    color?: string
+    icon?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId: string
+    transactions?: TransactionUncheckedCreateNestedManyWithoutWalletInput
+  }
+
+  export type WalletCreateOrConnectWithoutLoansInput = {
+    where: WalletWhereUniqueInput
+    create: XOR<WalletCreateWithoutLoansInput, WalletUncheckedCreateWithoutLoansInput>
+  }
+
   export type UserUpsertWithoutLoansInput = {
     update: XOR<UserUpdateWithoutLoansInput, UserUncheckedUpdateWithoutLoansInput>
     create: XOR<UserCreateWithoutLoansInput, UserUncheckedCreateWithoutLoansInput>
@@ -25329,6 +25529,43 @@ export namespace Prisma {
     wallets?: WalletUncheckedUpdateManyWithoutUserNestedInput
     tags?: TagUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type WalletUpsertWithoutLoansInput = {
+    update: XOR<WalletUpdateWithoutLoansInput, WalletUncheckedUpdateWithoutLoansInput>
+    create: XOR<WalletCreateWithoutLoansInput, WalletUncheckedCreateWithoutLoansInput>
+    where?: WalletWhereInput
+  }
+
+  export type WalletUpdateToOneWithWhereWithoutLoansInput = {
+    where?: WalletWhereInput
+    data: XOR<WalletUpdateWithoutLoansInput, WalletUncheckedUpdateWithoutLoansInput>
+  }
+
+  export type WalletUpdateWithoutLoansInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    balance?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    icon?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutWalletsNestedInput
+    transactions?: TransactionUpdateManyWithoutWalletNestedInput
+  }
+
+  export type WalletUncheckedUpdateWithoutLoansInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    balance?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    icon?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    transactions?: TransactionUncheckedUpdateManyWithoutWalletNestedInput
   }
 
   export type UserCreateWithoutAlertsInput = {
@@ -25946,6 +26183,46 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type LoanCreateWithoutWalletInput = {
+    id?: string
+    entityName: string
+    type: $Enums.LoanType
+    amount: number
+    paidAmount?: number
+    interestRate?: number
+    status?: $Enums.LoanStatus
+    dueDate?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutLoansInput
+  }
+
+  export type LoanUncheckedCreateWithoutWalletInput = {
+    id?: string
+    entityName: string
+    type: $Enums.LoanType
+    amount: number
+    paidAmount?: number
+    interestRate?: number
+    status?: $Enums.LoanStatus
+    dueDate?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId: string
+  }
+
+  export type LoanCreateOrConnectWithoutWalletInput = {
+    where: LoanWhereUniqueInput
+    create: XOR<LoanCreateWithoutWalletInput, LoanUncheckedCreateWithoutWalletInput>
+  }
+
+  export type LoanCreateManyWalletInputEnvelope = {
+    data: LoanCreateManyWalletInput | LoanCreateManyWalletInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutWalletsInput = {
     update: XOR<UserUpdateWithoutWalletsInput, UserUncheckedUpdateWithoutWalletsInput>
     create: XOR<UserCreateWithoutWalletsInput, UserUncheckedCreateWithoutWalletsInput>
@@ -26015,6 +26292,22 @@ export namespace Prisma {
   export type TransactionUpdateManyWithWhereWithoutWalletInput = {
     where: TransactionScalarWhereInput
     data: XOR<TransactionUpdateManyMutationInput, TransactionUncheckedUpdateManyWithoutWalletInput>
+  }
+
+  export type LoanUpsertWithWhereUniqueWithoutWalletInput = {
+    where: LoanWhereUniqueInput
+    update: XOR<LoanUpdateWithoutWalletInput, LoanUncheckedUpdateWithoutWalletInput>
+    create: XOR<LoanCreateWithoutWalletInput, LoanUncheckedCreateWithoutWalletInput>
+  }
+
+  export type LoanUpdateWithWhereUniqueWithoutWalletInput = {
+    where: LoanWhereUniqueInput
+    data: XOR<LoanUpdateWithoutWalletInput, LoanUncheckedUpdateWithoutWalletInput>
+  }
+
+  export type LoanUpdateManyWithWhereWithoutWalletInput = {
+    where: LoanScalarWhereInput
+    data: XOR<LoanUpdateManyMutationInput, LoanUncheckedUpdateManyWithoutWalletInput>
   }
 
   export type UserCreateWithoutTagsInput = {
@@ -26324,6 +26617,7 @@ export namespace Prisma {
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    walletId?: string | null
   }
 
   export type AlertCreateManyUserInput = {
@@ -26535,6 +26829,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    wallet?: WalletUpdateOneWithoutLoansNestedInput
   }
 
   export type LoanUncheckedUpdateWithoutUserInput = {
@@ -26549,6 +26844,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    walletId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type LoanUncheckedUpdateManyWithoutUserInput = {
@@ -26563,6 +26859,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    walletId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AlertUpdateWithoutUserInput = {
@@ -26737,6 +27034,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transactions?: TransactionUpdateManyWithoutWalletNestedInput
+    loans?: LoanUpdateManyWithoutWalletNestedInput
   }
 
   export type WalletUncheckedUpdateWithoutUserInput = {
@@ -26749,6 +27047,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transactions?: TransactionUncheckedUpdateManyWithoutWalletNestedInput
+    loans?: LoanUncheckedUpdateManyWithoutWalletNestedInput
   }
 
   export type WalletUncheckedUpdateManyWithoutUserInput = {
@@ -27008,6 +27307,21 @@ export namespace Prisma {
     userId: string
   }
 
+  export type LoanCreateManyWalletInput = {
+    id?: string
+    entityName: string
+    type: $Enums.LoanType
+    amount: number
+    paidAmount?: number
+    interestRate?: number
+    status?: $Enums.LoanStatus
+    dueDate?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId: string
+  }
+
   export type TransactionUpdateWithoutWalletInput = {
     id?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -27046,6 +27360,51 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type LoanUpdateWithoutWalletInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    entityName?: StringFieldUpdateOperationsInput | string
+    type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
+    amount?: FloatFieldUpdateOperationsInput | number
+    paidAmount?: FloatFieldUpdateOperationsInput | number
+    interestRate?: FloatFieldUpdateOperationsInput | number
+    status?: EnumLoanStatusFieldUpdateOperationsInput | $Enums.LoanStatus
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutLoansNestedInput
+  }
+
+  export type LoanUncheckedUpdateWithoutWalletInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    entityName?: StringFieldUpdateOperationsInput | string
+    type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
+    amount?: FloatFieldUpdateOperationsInput | number
+    paidAmount?: FloatFieldUpdateOperationsInput | number
+    interestRate?: FloatFieldUpdateOperationsInput | number
+    status?: EnumLoanStatusFieldUpdateOperationsInput | $Enums.LoanStatus
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type LoanUncheckedUpdateManyWithoutWalletInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    entityName?: StringFieldUpdateOperationsInput | string
+    type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
+    amount?: FloatFieldUpdateOperationsInput | number
+    paidAmount?: FloatFieldUpdateOperationsInput | number
+    interestRate?: FloatFieldUpdateOperationsInput | number
+    status?: EnumLoanStatusFieldUpdateOperationsInput | $Enums.LoanStatus
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
   }
 

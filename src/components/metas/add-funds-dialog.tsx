@@ -30,6 +30,7 @@ import { addFundsToGoal } from "@/actions/financial-actions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { PiggyBank, ArrowUpRight } from "lucide-react";
+import { WalletSelect } from "@/components/cuentas/wallet-select";
 
 const fundsSchema = z.object({
   amount: z.coerce.number().min(0.01, "El monto debe ser mayor a 0"),
@@ -42,7 +43,6 @@ interface AddFundsDialogProps {
   goalId: string | null;
   goalName: string | null;
   currency?: string;
-  wallets?: { id: string; name: string; color: string; balance: number }[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -51,7 +51,6 @@ export function AddFundsDialog({
   goalId,
   goalName,
   currency = "PEN",
-  wallets = [],
   open,
   onOpenChange,
 }: AddFundsDialogProps) {
@@ -59,7 +58,7 @@ export function AddFundsDialog({
     resolver: zodResolver(fundsSchema) as any,
     defaultValues: {
       amount: 0,
-      walletId: "",
+      walletId: "NO_WALLET",
     },
   });
 
@@ -139,41 +138,15 @@ export function AddFundsDialog({
                       <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-white/40 block">
                         Desde cuenta (opcional)
                       </FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger className={cn(inputCls, "px-4 w-full")}>
-                            {field.value && field.value !== "" ? (
-                              field.value === "NO_WALLET" ? (
-                                <span className="text-white/40 italic">No descontar de cuenta</span>
-                              ) : (
-                                <div className="flex items-center gap-2">
-                                  <div 
-                                    className="w-2.5 h-2.5 rounded-full" 
-                                    style={{ backgroundColor: wallets.find(w => w.id === field.value)?.color }} 
-                                  />
-                                  <span>{wallets.find(w => w.id === field.value)?.name}</span>
-                                </div>
-                              )
-                            ) : (
-                              <SelectValue placeholder="Solo meta (no descuenta)" />
-                            )}
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="bg-[#111318] border border-white/8 text-white rounded-2xl shadow-2xl overflow-hidden max-h-[300px]">
-                          <SelectItem value="NO_WALLET" className="text-white/40 italic">
-                            No descontar de cuenta
-                          </SelectItem>
-                          <div className="h-px bg-white/5 my-1 mx-2" />
-                          {wallets.map((wallet) => (
-                            <SelectItem key={wallet.id} value={wallet.id} className="rounded-xl my-0.5">
-                              <div className="flex items-center gap-2">
-                                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: wallet.color }} />
-                                <span>{wallet.name}</span>
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <WalletSelect
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        currency={currency}
+                        allowNone={true}
+                        noneLabel="Solo meta (no descuenta)"
+                        noneValue="NO_WALLET"
+                        showBalance={true}
+                      />
                       <FormMessage />
                     </FormItem>
                   )}
